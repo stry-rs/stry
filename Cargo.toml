@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = [ "Txuritan <txuritan@protonmail.com>" ]
 edition = "2018"
 
+description = "A library allowing you to run an fixed number of asynchronous task repeatedly until a shutdown signal is sent out."
+documentation = "https://docs.rs/stry-evermore"
+repository = "https://gitlab.com/stry-rs/evermore"
+
 license = "MIT"
 
 [features]
