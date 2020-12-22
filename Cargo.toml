@@ -1,0 +1,18 @@
+[package]
+name = "stry-evermore"
+version = "2.3.0"
+authors = [ "Txuritan <txuritan@protonmail.com>" ]
+edition = "2018"
+
+license = "MIT"
+
+[features]
+with-log = [ "log" ]
+with-tracing = [ "tracing", "tracing-futures" ]
+
+[dependencies]
+futures-core = "0.3"
+pin-project = "1.0"
+log = { version = "0.4", default-features = false, optional = true }
+tracing = { version = "0.1", default-features = false, optional = true }
+tracing-futures = { version = "0.2", default-features = false, optional = true }
