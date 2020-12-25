@@ -5,6 +5,9 @@ mod parser;
 
 use crate::models::Method;
 
+#[cfg(not(any(feature = "with-tide", feature = "with-warp")))]
+compile_error!("Either feature `with-tide` or `with-warp` must be enabled for this crate.");
+
 macro_rules! handler {
     ($( $name:ident => $method:expr, )*) => {
         $(

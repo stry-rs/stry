@@ -61,20 +61,21 @@ fn parse_guards(item: &ItemFn) -> Result<Vec<GuardParam>, TokenStream> {
 
         if attr_path.is_ident("body_size") {
             // Attempt to parse the attribute's body
-            let Triplet { key, value, .. }: Triplet<Ident, syn::Token![=], LitStr> =
-                match attr.parse_args() {
-                    Ok(value) => value,
-                    Err(err) => {
-                        let mut spanned = syn::Error::new_spanned(
-                            &attr.tokens,
-                            r#"[stry-attrouter] failed to parse attribute, example: #[body_size(max = "1024")]"#,
-                        );
+            let Triplet { key, value, .. }: Triplet<Ident, syn::Token![=], LitStr> = match attr
+                .parse_args()
+            {
+                Ok(value) => value,
+                Err(err) => {
+                    let mut spanned = syn::Error::new_spanned(
+                        &attr.tokens,
+                        r#"[stry-attrouter] failed to parse attribute, example: #[body_size(max = "1024")]"#,
+                    );
 
-                        spanned.combine(err);
+                    spanned.combine(err);
 
-                        return Err(spanned.to_compile_error());
-                    }
-                };
+                    return Err(spanned.to_compile_error());
+                }
+            };
 
             if key == "max" {
                 guards.push(GuardParam::BodySize { key, value });

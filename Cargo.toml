@@ -1,3 +1,9 @@
+[workspace]
+members = [
+    ".",
+    "tests-warp",
+]
+
 [package]
 name = "stry-attrouter"
 version = "0.1.0"
@@ -17,7 +23,4 @@ with-warp = []
 [dependencies]
 proc-macro2 = "1.0"
 quote = "1.0"
-syn = { version = "1.0", features = [ "full", "extra-traits" ] }
-
-[dev-dependencies]
-warp = { version = "0.2", default-features = false }
+syn = { version = "1.0", features = [ "full" ] }
