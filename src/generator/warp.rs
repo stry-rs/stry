@@ -139,7 +139,7 @@ fn build_guards(guards: &[GuardParam]) -> TokenStream {
                 } else {
                     return syn::Error::new_spanned(
                         &key,
-                        format!(r#"failed to parse attribute, invalid type `{}`, example: #[body_size(max = "1024")]"#, key),
+                        format!(r#"[stry-attrouter] failed to parse attribute, invalid type `{}`, example: #[body_size(max = "1024")]"#, key),
                     ).to_compile_error();
                 }
             }
@@ -178,7 +178,7 @@ fn build_filters_and_inputs(
                         routing.push(quote::quote! { and(::warp::filters::path::param::<#typ>()) });
                     }
                     None => {
-                        let spanned = syn::Error::new_spanned(url_params.token, "Unable to find url param type, make sure the param has a matching function parameter");
+                        let spanned = syn::Error::new_spanned(url_params.token, "[stry-attrouter] Unable to find url param type, make sure the param has a matching function parameter");
 
                         return Err(spanned.to_compile_error());
                     }
@@ -202,7 +202,7 @@ fn build_filters_and_inputs(
     {
         let stream = match kind {
             Some(FnParamKind::Data) => {
-                let spanned = syn::Error::new_spanned(token, "warp-macros bug: This should not happen, invalid partitioned enum variant: non data");
+                let spanned = syn::Error::new_spanned(token, "[stry-attrouter] This should not happen, invalid partitioned enum variant: non data");
 
                 return Err(spanned.to_compile_error());
             }
@@ -241,7 +241,7 @@ fn build_filters_and_inputs(
             | Some(FnParamKind::Header { .. })
             | Some(FnParamKind::Json)
             | Some(FnParamKind::Query) => {
-                let spanned = syn::Error::new_spanned(token, "warp-macros bug: This should not happen, invalid partitioned enum variant: data");
+                let spanned = syn::Error::new_spanned(token, "[stry-attrouter] This should not happen, invalid partitioned enum variant: data");
 
                 return Err(spanned.to_compile_error());
             }

@@ -45,7 +45,7 @@ fn parse_guards(item: &ItemFn) -> Result<Vec<GuardParam>, TokenStream> {
                 Err(err) => {
                     let mut spanned = syn::Error::new_spanned(
                         &attr.tokens,
-                        r#"failed to parse attribute, example: #[header("Content-Type": "application/json")]"#,
+                        r#"[stry-attrouter] failed to parse attribute, example: #[header("Content-Type": "application/json")]"#,
                     );
 
                     spanned.combine(err);
@@ -67,7 +67,7 @@ fn parse_guards(item: &ItemFn) -> Result<Vec<GuardParam>, TokenStream> {
                     Err(err) => {
                         let mut spanned = syn::Error::new_spanned(
                             &attr.tokens,
-                            r#"failed to parse attribute, example: #[body_size(max = "1024")]"#,
+                            r#"[stry-attrouter] failed to parse attribute, example: #[body_size(max = "1024")]"#,
                         );
 
                         spanned.combine(err);
@@ -81,7 +81,7 @@ fn parse_guards(item: &ItemFn) -> Result<Vec<GuardParam>, TokenStream> {
             } else {
                 return Err(syn::Error::new_spanned(
                     &attr.tokens,
-                    format!(r#"failed to parse attribute, invalid type `{}`, example: #[body_size(max = "1024")]"#, key),
+                    format!(r#"[stry-attrouter] failed to parse attribute, invalid type `{}`, example: #[body_size(max = "1024")]"#, key),
                 ).to_compile_error());
             }
 
@@ -146,7 +146,7 @@ fn parse_params<'p>(
                     pat => {
                         return Err(syn::Error::new_spanned(
                             pat,
-                            "Unsupported function argument pattern type",
+                            "[stry-attrouter] Unsupported function argument pattern type",
                         )
                         .to_compile_error());
                     }
@@ -157,7 +157,7 @@ fn parse_params<'p>(
                     typ => {
                         return Err(syn::Error::new_spanned(
                             typ,
-                            "Unsupported function argument type",
+                            "[stry-attrouter] Unsupported function argument type",
                         )
                         .to_compile_error());
                     }
@@ -214,7 +214,7 @@ fn parse_params<'p>(
             FnArg::Receiver(_) => {
                 return Err(syn::Error::new_spanned(
                     param,
-                    "Routing macro does not allow for self referencing functions",
+                    "[stry-attrouter] Routing macro does not allow for self referencing functions",
                 )
                 .to_compile_error());
             }
@@ -278,7 +278,7 @@ fn clean_inputs(
             FnArg::Receiver(_) => {
                 return Err(syn::Error::new_spanned(
                     value,
-                    "Routing macro does not allow for self referencing functions",
+                    "[stry-attrouter] Routing macro does not allow for self referencing functions",
                 )
                 .to_compile_error())
             }
