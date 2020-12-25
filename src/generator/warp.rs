@@ -64,19 +64,23 @@ pub fn generate<'i>(
     // Async functions use `and_then` while sync functions use `map`
     // Select and build the closure for the right one
     let map = if route.asyncness {
-        quote::quote! { .and_then(|#closure| {
-            #( let #data = #data.clone(); )*
+        quote::quote! {
+            .and_then(|#closure| {
+                #( let #data = #data.clone(); )*
 
-            async move {
-                inner(#( #fn_inputs ),*).await
-            }
-        }) }
+                async move {
+                    inner(#( #fn_inputs ),*).await
+                }
+            })
+        }
     } else {
-        quote::quote! { .map(|#closure| {
-            #( let #data = #data.clone(); )*
+        quote::quote! {
+            .map(|#closure| {
+                #( let #data = #data.clone(); )*
 
-            inner(#( #fn_inputs ),*)
-        }) }
+                inner(#( #fn_inputs ),*)
+            })
+        }
     };
 
     // Select the correct filter base
@@ -92,10 +96,10 @@ pub fn generate<'i>(
 
     // Automatically imports warp's Filter trait
     let filter = quote::quote! {
-        warp::filters::method::#method_handler
+        ::warp::filters::method::#method_handler
         #attrs_stream
         #routing
-        .and(warp::filters::path::end())
+        .and(::warp::filters::path::end())
         #map
     };
 
@@ -104,12 +108,12 @@ pub fn generate<'i>(
     let inner = route.clean;
 
     Ok(quote::quote! {
-        #vis fn #name( #( #wrapper_inputs ),* ) -> impl warp::Filter<Extract = impl warp::Reply, Error = warp::Rejection> + std::clone::Clone {
+        #vis fn #name( #( #wrapper_inputs ),* ) -> impl ::warp::Filter<Extract = impl ::warp::Reply, Error = ::warp::Rejection> + ::std::clone::Clone {
             #inner
 
             #[allow(unused_imports)]
             {
-                use warp::Filter;
+                use ::warp::Filter;
 
                 #filter
             }
@@ -130,7 +134,7 @@ fn build_guards(guards: &[GuardParam]) -> TokenStream {
                     let int = LitInt::new(&repr, span);
 
                     parts.push(
-                        quote::quote! { and(warp::filters::body::content_length_limit(#int)) },
+                        quote::quote! { and(::warp::filters::body::content_length_limit(#int)) },
                     );
                 } else {
                     return syn::Error::new_spanned(
@@ -140,7 +144,7 @@ fn build_guards(guards: &[GuardParam]) -> TokenStream {
                 }
             }
             GuardParam::Header { key, value } => {
-                parts.push(quote::quote! { and(warp::filters::header::exact(#key, #value)) });
+                parts.push(quote::quote! { and(::warp::filters::header::exact(#key, #value)) });
             }
         }
     }
@@ -160,7 +164,7 @@ fn build_filters_and_inputs(
     for param in &url_params.items {
         match param {
             UrlParam::Chunk { value } => {
-                routing.push(quote::quote! { and(warp::filters::path::path(#value)) });
+                routing.push(quote::quote! { and(::warp::filters::path::path(#value)) });
             }
             UrlParam::Param { key } => {
                 // Get the URL param type
@@ -171,7 +175,7 @@ fn build_filters_and_inputs(
                         let ident = quote::format_ident!("{}", key);
 
                         closure.push(quote::quote! { #ident: #typ });
-                        routing.push(quote::quote! { and(warp::filters::path::param::<#typ>()) });
+                        routing.push(quote::quote! { and(::warp::filters::path::param::<#typ>()) });
                     }
                     None => {
                         let spanned = syn::Error::new_spanned(url_params.token, "Unable to find url param type, make sure the param has a matching function parameter");
@@ -203,16 +207,16 @@ fn build_filters_and_inputs(
                 return Err(spanned.to_compile_error());
             }
             Some(FnParamKind::Form) => {
-                quote::quote! { and(warp::filters::body::form::<#typ>()) }
+                quote::quote! { and(::warp::filters::body::form::<#typ>()) }
             }
             Some(FnParamKind::Header { header }) => {
-                quote::quote! { and(warp::filters::header::header::<#typ>(#header)) }
+                quote::quote! { and(::warp::filters::header::header::<#typ>(#header)) }
             }
             Some(FnParamKind::Json) => {
-                quote::quote! { and(warp::filters::body::json::<#typ>()) }
+                quote::quote! { and(::warp::filters::body::json::<#typ>()) }
             }
             Some(FnParamKind::Query) => {
-                quote::quote! { and(warp::filters::query::query::<#typ>()) }
+                quote::quote! { and(::warp::filters::query::query::<#typ>()) }
             }
             None => continue,
         };
@@ -231,7 +235,7 @@ fn build_filters_and_inputs(
     {
         let stream = match kind {
             Some(FnParamKind::Data) => {
-                quote::quote! { and(warp::filters::any::any().map(move || #key.clone())) }
+                quote::quote! { and(::warp::filters::any::any().map(move || #key.clone())) }
             }
             Some(FnParamKind::Form)
             | Some(FnParamKind::Header { .. })
