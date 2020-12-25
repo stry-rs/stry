@@ -4,7 +4,7 @@ use {
         parser,
     },
     proc_macro2::TokenStream,
-    syn::{FnArg, ItemFn, PatType},
+    syn::{FnArg, ItemFn, LitInt, PatType},
 };
 
 pub fn generate<'i>(
@@ -125,8 +125,12 @@ fn build_guards(guards: &[GuardParam]) -> TokenStream {
         match attr {
             GuardParam::BodySize { key, value } => {
                 if key == "max" {
+                    let repr = value.value();
+                    let span = value.span();
+                    let int = LitInt::new(&repr, span);
+
                     parts.push(
-                        quote::quote! { and(warp::filters::body::content_length_limit(#value)) },
+                        quote::quote! { and(warp::filters::body::content_length_limit(#int)) },
                     );
                 } else {
                     return syn::Error::new_spanned(

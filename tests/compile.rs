@@ -26,6 +26,12 @@ fn hello_header_attr(name: String) -> impl warp::Reply {
 }
 
 #[stry_attrouter::get("/hello/{name}")]
+#[body_size(max = "4096")]
+fn hello_max_size(name: String) -> impl warp::Reply {
+    format!("Hello, {}!", name)
+}
+
+#[stry_attrouter::get("/hello/{name}")]
 async fn hello_data(
     #[data] _data: Data,
     name: String,
