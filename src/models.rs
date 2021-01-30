@@ -1,7 +1,7 @@
 use {chrono::{DateTime, Utc}, crate::backend::Id};
 
 // TODO: flesh out story types, comments and their paragraph form
-// TODO: figure out the types of user blogs
+// TODO: change some items to allow references to themselves instead of whole data (ie chapters and series)
 
 //#region [rgba(186,225,255,0.05)] core types
 #[rustfmt::skip]
@@ -10,6 +10,7 @@ use {chrono::{DateTime, Utc}, crate::backend::Id};
 pub struct Settings {
     pub key: String,
     pub value: String,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
@@ -19,14 +20,63 @@ pub struct Settings {
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct User {
     pub id: Id,
+
     pub name: String,
     pub bio: String,
+
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Part {
+    pub id: Id,
+
+    pub kind: PartKind,
+    pub comments: Vec<Comment>,
+
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum PartKind {
+    Image { url: String, alt: Option<String>, },
+    Text { content: String, },
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Comment {
+    pub id: Id,
+
+    pub user: User,
+    pub content: String,
+    pub children: Vec<Comment>,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
 //#endregion
 
 //#region [rgba(255,179,186,0.05)] blog types
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Post {
+    pub id: Id,
+
+    pub parts: Vec<Part>,
+    pub comments: Vec<Comment>,
+
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
+}
 //#endregion
 
 //#region[rgba(186,255,201,0.05)] story types
@@ -34,12 +84,18 @@ pub struct User {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Chapter {
-    pub id: String,
+    pub id: Id,
+
     pub name: String,
-    pub pre: String,
-    pub main: String,
-    pub post: String,
+
+    pub prefix: Vec<Part>,
+    pub main: Vec<Part>,
+    pub suffix: Vec<Part>,
+
+    pub comments: Vec<Comment>,
+
     pub words: i64,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
@@ -68,7 +124,7 @@ pub enum State {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Series {
-    pub id: String,
+    pub id: Id,
 
     pub name: String,
     pub summary: String,
@@ -84,22 +140,8 @@ pub struct Series {
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
-pub struct StorySeries {
-    pub id: String,
-
-    pub name: String,
-
-    pub place: i32,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
-}
-
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
 pub struct Story {
-    pub id: String,
+    pub id: Id,
 
     pub name: String,
     pub summary: String,
@@ -111,14 +153,18 @@ pub struct Story {
     pub words: i32,
 
     pub authors: Vec<User>,
-    pub origins: Vec<Origin>,
+    pub commissioners: Vec<User>,
+    pub dedicatees: Vec<User>,
 
+    pub origins: Vec<Origin>,
     pub warnings: Vec<Warning>,
     pub pairings: Vec<Pairing>,
     pub characters: Vec<Character>,
     pub tags: Vec<Tag>,
 
-    pub series: Option<StorySeries>,
+    pub comments: Vec<Comment>,
+
+    pub series: Option<Series>,
 
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
@@ -128,8 +174,10 @@ pub struct Story {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Character {
-    pub id: String,
+    pub id: Id,
+
     pub name: String,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
@@ -138,8 +186,10 @@ pub struct Character {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Origin {
-    pub id: String,
+    pub id: Id,
+
     pub name: String,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
@@ -148,9 +198,11 @@ pub struct Origin {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Pairing {
-    pub id: String,
+    pub id: Id,
+
     pub hash: String,
     pub platonic: bool,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
@@ -159,8 +211,10 @@ pub struct Pairing {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Tag {
-    pub id: String,
+    pub id: Id,
+
     pub name: String,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
@@ -169,8 +223,10 @@ pub struct Tag {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Warning {
-    pub id: String,
+    pub id: Id,
+
     pub name: String,
+
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
