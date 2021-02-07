@@ -9,7 +9,8 @@ use {
 pub trait Backend<Err>: BackendEntry<Entry = models::Tag, Error = Err>
 where
     Err: Error,
-{}
+{
+}
 
 /// A database entry, or something that can be stored and retrieved from a database.
 #[cfg(feature = "with-backend")]
