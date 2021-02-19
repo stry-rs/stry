@@ -6,7 +6,7 @@ edition = "2018"
 
 description = "The PostgreSQL database backend for stry."
 documentation = "https://docs.rs/stry-backend-postgres/"
-repository = ""
+repository = "https://gitlab.com/stry-rs/backend-postgres"
 
 license = "MIT"
 
