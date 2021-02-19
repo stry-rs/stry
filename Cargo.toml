@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = [ "Txuritan <txuritan@protonmail.com>" ]
 edition = "2018"
 
+description = "Shared code for stry crates, from backends to frontends, they all depend on this."
+documentation = "https://docs.rs/stry-common"
+repository = "https://gitlab.com/stry-rs/common"
+
 license = "MIT"
 
 [features]
