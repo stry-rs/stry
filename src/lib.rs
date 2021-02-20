@@ -8,6 +8,7 @@ pub mod backend;
 pub mod config;
 pub mod error;
 pub mod models;
+pub mod uri;
 
 #[cfg(feature = "with-nanoid")]
 pub use crate::utils::nanoid::nanoid;

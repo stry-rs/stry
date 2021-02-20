@@ -1,9 +1,9 @@
 //! Types for the configuration and implementation of database backends.
 
 use {
-    crate::models::{
+    crate::{models::{
         Chapter, Character, Comment, Origin, Pairing, Part, Post, Series, Story, Tag, User, Warning,
-    },
+    }, uri::Uri},
     std::{collections::HashMap, error::Error, ops::Deref},
 };
 
@@ -40,15 +40,22 @@ impl<T> Deref for Existing<T> {
     }
 }
 
+pub trait BackendFactory {
+    type Error: Error;
+    type Backend: Backend<Self::Error>;
+
+    fn create(&self, config: Uri) -> Result<Self::Backend, Self::Error>;
+}
+
 /// A supported database backend that depends on a series of entries.
 ///
 /// Requires that the backend also implements [`BackendEntry`] for these types
 /// (sharing the same error type):
 ///
 ///   - Core Types
-///     - [`User`]
-///     - [`Part`]
 ///     - [`Comment`]
+///     - [`Part`]
+///     - [`User`]
 ///   - Blog Types
 ///     - [`Post`]
 ///   - Story Types
@@ -79,6 +86,8 @@ pub trait Backend<Err>:
 where
     Err: Error,
 {
+    /// Run any missing migration on the database backend.
+    async fn migrate(&self) -> Result<(), Err>;
 }
 
 /// A database entry, or something that can be stored and retrieved from a database.
