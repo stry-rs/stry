@@ -13,9 +13,7 @@ license = "MIT"
 [features]
 default = [ "with-backend" ]
 
-source-clap = [ "clap" ]
 with-backend = [ "async-trait" ]
-with-io = [ "ron" ]
 with-nanoid = [ "rand" ]
 with-source-clap = [ "clap" ]
 with-source-ron = [ "ron" ]
@@ -25,7 +23,6 @@ async-trait = { version= "0.1", optional = true }
 chrono = { version = "0.4", features = [ "serde" ] }
 clap = { version = "2.33", default-features = false, optional = true }
 either = { version = "1.6", features = [ "serde" ] }
-miau = { version = "0.1", default-features = false }
 percent-encoding = "2.1"
 rand = { version = "0.8", optional = true }
 ron = { version = "0.6", optional = true }

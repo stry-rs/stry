@@ -270,7 +270,7 @@ impl<'s> Parser<'s> {
 
                     Ok((hosts, ports))
                 }
-            },
+            }
         }
     }
 
@@ -379,8 +379,7 @@ mod test {
 
     #[test]
     fn test_options_encoding() {
-        let expected = Uri::new("postgres", "localhost", 54123)
-            .option("with a space", "for sure");
+        let expected = Uri::new("postgres", "localhost", 54123).option("with a space", "for sure");
         let actual = Uri::parse("postgres://localhost:54123?with%20a%20space=for%20sure");
 
         assert_eq!(Ok(expected), actual);

@@ -1,9 +1,13 @@
 //! Types for the configuration and implementation of database backends.
 
 use {
-    crate::{models::{
-        Chapter, Character, Comment, Origin, Pairing, Part, Post, Series, Story, Tag, User, Warning,
-    }, uri::Uri},
+    crate::{
+        models::{
+            Chapter, Character, Comment, Origin, Pairing, Part, Post, Series, Story, Tag, User,
+            Warning,
+        },
+        uri::Uri,
+    },
     std::{collections::HashMap, error::Error, ops::Deref},
 };
 
@@ -40,10 +44,12 @@ impl<T> Deref for Existing<T> {
     }
 }
 
+/// A backend 'factory' that acts as a constructor for backends.
 pub trait BackendFactory {
     type Error: Error;
     type Backend: Backend<Self::Error>;
 
+    /// Essentially a `new` function.
     fn create(&self, config: Uri) -> Result<Self::Backend, Self::Error>;
 }
 
