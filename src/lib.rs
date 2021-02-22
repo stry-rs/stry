@@ -4,7 +4,7 @@ use std::fmt;
 
 pub mod utils;
 
-mod anulap;
+pub mod anulap;
 pub mod backend;
 pub mod config;
 pub mod error;

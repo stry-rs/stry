@@ -19,7 +19,7 @@ impl<'a> ClapSource<'a> {
 #[cfg(feature = "with-source-clap")]
 impl<'a> Source for ClapSource<'a> {
     fn get(&self, key: &str) -> Option<String> {
-        todo!()
+        self.matches.value_of(key).map(String::from)
     }
 }
 
@@ -47,7 +47,26 @@ impl RonSource {
 #[cfg(feature = "with-source-ron")]
 impl Source for RonSource {
     fn get(&self, key: &str) -> Option<String> {
-        todo!()
+        match &self.value {
+            ron::Value::Map(map) => map
+                .iter()
+                .find(|(k, _)| match k {
+                    ron::Value::String(k) => k == key,
+                    _ => false,
+                })
+                .and_then(|(_, value)| -> Option<String> {
+                    match value {
+                        ron::Value::Bool(boolean) => Some(boolean.to_string()),
+                        ron::Value::Number(number) => match number {
+                            ron::Number::Integer(integer) => Some(integer.to_string()),
+                            ron::Number::Float(float) => Some(float.get().to_string()),
+                        },
+                        ron::Value::String(string) => Some(string.clone()),
+                        _ => None,
+                    }
+                }),
+            _ => None,
+        }
     }
 }
 
@@ -99,9 +118,7 @@ impl From<ron::Error> for RonSourceError {
 pub struct Config {
     pub ip: [u8; 4],
     pub port: u16,
-    pub tls: Tls,
     pub database: String,
-    pub executor: Executor,
 }
 
 impl Initialize for Config {
@@ -127,23 +144,9 @@ impl Initialize for Config {
                 .get_string("port")
                 .and_then(|value| value.parse().ok())
                 .unwrap_or(8901),
-            tls: config
-                .get_string("tls")
-                .and_then(|value| {
-                    let cert = config.get_string("tls-cert")?;
-                    let key = config.get_string("tls-key")?;
-
-                    match &*value.to_lowercase() {
-                        "file" => Some(Tls::File { cert, key }),
-                        "text" => Some(Tls::Text { cert, key }),
-                        _ => None,
-                    }
-                })
-                .unwrap_or(Tls::None),
             database: config
                 .get_string("database")
                 .unwrap_or_else(|| String::from("postgres://stry:stry@localhost:5432/stry")),
-            executor: Executor::init(config)?,
         })
     }
 }
@@ -153,51 +156,7 @@ impl Default for Config {
         Self {
             ip: [0, 0, 0, 0],
             port: 8901,
-            tls: Tls::None,
             database: String::from("postgres://stry:stry@localhost:5432/stry"),
-            executor: Executor::default(),
-        }
-    }
-}
-
-#[derive(Clone, Debug, serde::Deserialize)]
-pub enum Tls {
-    File { cert: String, key: String },
-    Text { cert: String, key: String },
-    None,
-}
-
-impl Default for Tls {
-    fn default() -> Self {
-        Tls::None
-    }
-}
-
-#[derive(Clone, Debug, serde::Deserialize)]
-#[serde(default)]
-pub struct Executor {
-    pub core_threads: Option<usize>,
-    pub max_threads: Option<usize>,
-}
-
-impl Initialize for Executor {
-    fn init(config: &Anulap<'_>) -> Option<Self> {
-        Some(Self {
-            core_threads: config
-                .get_string("executor-core-threads")
-                .and_then(|value| value.parse::<usize>().ok()),
-            max_threads: config
-                .get_string("executor-max-threads")
-                .and_then(|value| value.parse::<usize>().ok()),
-        })
-    }
-}
-
-impl Default for Executor {
-    fn default() -> Self {
-        Self {
-            core_threads: None,
-            max_threads: None,
         }
     }
 }
