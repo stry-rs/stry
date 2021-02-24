@@ -1,6 +1,9 @@
 use {
     crate::{PostgresBackend, PostgresBackendError},
-    stry_common::{models::Origin, backend::{BackendEntry, Id, New, Existing}},
+    stry_common::{
+        backend::{BackendEntry, Existing, Id, New},
+        models::Origin,
+    },
 };
 
 #[async_trait::async_trait]
@@ -9,7 +12,11 @@ impl BackendEntry<Origin, PostgresBackendError> for PostgresBackend {
         todo!()
     }
 
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Origin>>, PostgresBackendError> {
+    async fn all(
+        &self,
+        cursor: Id,
+        limit: usize,
+    ) -> Result<Vec<Existing<Origin>>, PostgresBackendError> {
         todo!()
     }
 
