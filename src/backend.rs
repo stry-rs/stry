@@ -45,12 +45,14 @@ impl<T> Deref for Existing<T> {
 }
 
 /// A backend 'factory' that acts as a constructor for backends.
+#[cfg(feature = "with-backend")]
+#[async_trait::async_trait]
 pub trait BackendFactory {
     type Error: Error;
     type Backend: Backend<Self::Error>;
 
     /// Essentially a `new` function.
-    fn create(&self, config: Uri) -> Result<Self::Backend, Self::Error>;
+    async fn create(&self, config: Uri) -> Result<Self::Backend, Self::Error>;
 }
 
 /// A supported database backend that depends on a series of entries.
