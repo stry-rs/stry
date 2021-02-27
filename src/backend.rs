@@ -3,8 +3,10 @@
 use {
     crate::{
         models::{
-            Chapter, Character, Comment, Origin, Pairing, Part, Post, Series, Story, Tag, User,
-            Warning,
+            blog::Post,
+            core::{Comment, Part, User},
+            story::{Chapter, Character, Origin, Pairing, Series, Story, Tag, Warning},
+            Id,
         },
         uri::Uri,
     },
@@ -113,12 +115,6 @@ pub trait BackendEntry<Entry, Error> {
     async fn update(&self, data: Existing<Entry>) -> Result<(), Error>;
     /// Remove a entity of type.
     async fn remove(&self, id: Id) -> Result<(), Error>;
-}
-
-crate::newtype! {
-    /// The database entry id newtype, is a `String` by default
-    #[derive(serde::Deserialize, serde::Serialize)]
-    Id: String
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
