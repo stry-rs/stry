@@ -5,6 +5,7 @@ use {
 };
 
 //#region [rgba(186,225,255,0.05)] core types
+/// Universal site settings.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -22,8 +23,8 @@ pub struct Settings {
 pub struct User {
     pub id: Id,
 
-    pub name: String,
-    pub bio: String,
+    pub account: SettingsAccount,
+    pub site: SettingsSite,
 
     /// # Variant
     ///
@@ -36,6 +37,33 @@ pub struct User {
 
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
+}
+
+/// User settings for the user themself, ie name, biography, and security details
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct SettingsAccount {
+    pub email: String,
+    pub name: String,
+    pub biography: String,
+}
+
+/// User settings for the site itself, ie appearance and notifications
+// TODO: support color blindness
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct SettingsSite {
+    pub theme: SiteTheme,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum SiteTheme {
+    Dark,
+    Light,
 }
 
 #[rustfmt::skip]
