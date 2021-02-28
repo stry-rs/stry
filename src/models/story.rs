@@ -1,9 +1,8 @@
 use {
     crate::models::{
         core::{Comment, Part, User},
-        Id,
+        Existing, Id,
     },
-    chrono::{DateTime, Utc},
     either::Either,
 };
 
@@ -11,8 +10,6 @@ use {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Story {
-    pub id: Id,
-
     pub name: String,
     pub summary: String,
 
@@ -41,17 +38,12 @@ pub struct Story {
     pub words: i32,
 
     pub comments: Vec<Comment>,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Chapter {
-    pub id: Id,
-
     pub name: String,
 
     pub prefix: Vec<Part>,
@@ -61,17 +53,12 @@ pub struct Chapter {
     pub comments: Vec<Comment>,
 
     pub words: i64,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Series {
-    pub id: Id,
-
     pub name: String,
     pub summary: String,
 
@@ -80,77 +67,49 @@ pub struct Series {
     /// # Variant
     ///
     /// Is `Left` when its used directly and is `Left` when its used indirectly (ie in another entity).
-    pub stories: Either<Vec<Story>, Vec<Id>>,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
+    pub stories: Either<Vec<Existing<Story>>, Vec<Id>>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Character {
-    pub id: Id,
-
     pub content: String,
     pub description: String,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Origin {
-    pub id: Id,
-
     pub content: String,
     pub description: String,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Pairing {
-    pub id: Id,
-
     pub hash: String,
     pub platonic: bool,
 
     pub characters: Vec<Character>,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Tag {
-    pub id: Id,
-
     pub content: String,
     pub description: String,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Warning {
-    pub id: Id,
-
     pub content: String,
     pub description: String,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]

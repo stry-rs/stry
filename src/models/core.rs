@@ -1,6 +1,5 @@
 use {
-    crate::models::{blog::Post, story::Story, Id},
-    chrono::{DateTime, Utc},
+    crate::models::{blog::Post, story::Story},
 };
 
 /// Universal site settings.
@@ -10,44 +9,67 @@ use {
 pub struct Settings {
     pub key: String,
     pub value: String,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct User {
-    pub id: Id,
-
     pub account: SettingsAccount,
     pub site: SettingsSite,
 
+    /// Stores all the stories that the user owns.
+    ///
     /// # Variant
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
     pub stories: Option<Vec<Story>>,
+    /// Stores all the blog posts that the user has.
+    ///
     /// # Variant
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
     pub posts: Option<Vec<Post>>,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
-/// User settings for the user themself, ie name, biography, and security details
+/// User settings for the user themself, ie name, biography, and security details.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct SettingsAccount {
-    pub email: String,
+    /// The user's visible username.
+    ///
+    /// # Note
+    ///
+    /// Usernames are not unique, users are tracked with their `Id` only.
+    ///
+    /// Due to this, multiple users can have the same username. If possible
+    /// let the user choose which account they interact with instead of using
+    /// the first retrieved user.
     pub name: String,
-    pub biography: String,
+
+    /// The user's email address.
+    ///
+    /// # Variant
+    ///
+    /// Is only `Some` when returned for login, a email change and for a user
+    /// profile 'view'.
+    pub email: Option<String>,
+    /// The hash of the user's password stored as bytes.
+    ///
+    /// # Variant
+    ///
+    /// This is only `Some` during a login attempt or password change.
+    pub hash: Option<Vec<u8>>,
+    /// The user's biography in parts.
+    ///
+    /// # Variant
+    ///
+    /// Is `None` if you aren't accessing a user profile 'view'.
+    pub biography: Option<Vec<Part>>,
 }
 
-/// User settings for the site itself, ie appearance and notifications
+/// User settings for the site itself, ie appearance and notifications.
 // TODO: support color blindness
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -64,17 +86,19 @@ pub enum SiteTheme {
     Light,
 }
 
+/// A chapter or comment segment that can be commented on.
+///
+/// # Notes
+///
+/// Due to parts having comments and comments being made of parts,
+/// replies/comments could be nested.
+/// It is better to store them separately rather than the whole tree.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Part {
-    pub id: Id,
-
     pub kind: PartKind,
     pub comments: Vec<Comment>,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
@@ -85,16 +109,18 @@ pub enum PartKind {
     Text { content: String, },
 }
 
+/// A comment made of parts and comments that can be commented on.
+///
+/// # Notes
+///
+/// Due to parts having comments and comments being made of parts,
+/// replies/comments could be nested.
+/// It is better to store them separately rather than the whole tree.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Comment {
-    pub id: Id,
-
     pub author: User,
     pub main: Vec<Part>,
     pub children: Vec<Comment>,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
 }

@@ -6,45 +6,12 @@ use {
             blog::Post,
             core::{Comment, Part, User},
             story::{Chapter, Character, Origin, Pairing, Series, Story, Tag, Warning},
-            Id,
+            Id, New, Existing,
         },
         uri::Uri,
     },
-    std::{collections::HashMap, error::Error, ops::Deref},
+    std::{collections::HashMap, error::Error},
 };
-
-/// A wrapper type to indicate that a type has no backend id.
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct New<T> {
-    inner: T,
-}
-
-impl<T> Deref for New<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.inner
-    }
-}
-
-/// A wrapper type to indicate that a type has a backend id.
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Existing<T> {
-    pub id: Id,
-    inner: T,
-}
-
-impl<T> Deref for Existing<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.inner
-    }
-}
 
 /// A backend 'factory' that acts as a constructor for backends.
 #[cfg(feature = "with-backend")]
