@@ -1,4 +1,4 @@
-//! Types for the configuration and implementation of database backends.
+//! Types for the implementation of database backends.
 
 use {
     crate::{
@@ -10,7 +10,7 @@ use {
         },
         uri::Uri,
     },
-    std::{collections::HashMap, error::Error},
+    std::error::Error,
 };
 
 /// A backend 'factory' that acts as a constructor for backends.

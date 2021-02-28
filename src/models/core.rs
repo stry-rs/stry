@@ -1,3 +1,5 @@
+//! Base entities that are used internally and by other 'modules'.
+
 use crate::models::{blog::Post, story::Story, Existing};
 
 /// Universal site settings.

@@ -1,8 +1,11 @@
+//! Init config information, everything else is handled though the frontend.
+
 use crate::anulap::{Anulap, Initialize};
 
 #[cfg(any(feature = "with-source-clap", feature = "with-source-on"))]
 use crate::anulap::Source;
 
+/// A config layer source that pulls values from a clap `ArgMatches`.
 #[cfg(feature = "with-source-clap")]
 #[derive(Debug)]
 pub struct ClapSource<'a> {
@@ -11,6 +14,7 @@ pub struct ClapSource<'a> {
 
 #[cfg(feature = "with-source-clap")]
 impl<'a> ClapSource<'a> {
+    /// Create a new clap source.
     pub fn new(matches: clap::ArgMatches<'a>) -> Self {
         Self { matches }
     }
@@ -23,6 +27,7 @@ impl<'a> Source for ClapSource<'a> {
     }
 }
 
+/// A config layer source based on a RON file.
 #[cfg(feature = "with-source-ron")]
 #[derive(Debug)]
 pub struct RonSource {
@@ -31,6 +36,7 @@ pub struct RonSource {
 
 #[cfg(feature = "with-source-ron")]
 impl RonSource {
+    /// Create a new source using the data from a file.
     pub fn from_file<P>(path: P) -> Result<Self, RonSourceError>
     where
         P: AsRef<std::path::Path>,
@@ -70,6 +76,7 @@ impl Source for RonSource {
     }
 }
 
+/// Errors that could occur when created a [`RonSource`].
 #[cfg(feature = "with-source-ron")]
 #[derive(Debug)]
 pub enum RonSourceError {
@@ -113,11 +120,54 @@ impl From<ron::Error> for RonSourceError {
     }
 }
 
+/// The application init configuration.
 #[derive(Clone, Debug, serde::Deserialize)]
 #[serde(default)]
 pub struct Config {
+    /// Defines what ip the web server will be bound to.
+    ///
+    /// # Default
+    ///
+    /// If constructed with [`Default::default`] this value is set to `[0, 0, 0, 0]` (aka `0.0.0.0`).
     pub ip: [u8; 4],
+
+    /// Defines what port the web server will listen to.
+    ///
+    /// # Default
+    ///
+    /// If constructed with [`Default::default`] this value is set to `8901`.
     pub port: u16,
+
+    /// The database connection URI.
+    ///
+    /// Uses following format:
+    ///
+    /// ```not_rust
+    /// scheme://[username:password@]host[:port1][,...hostN[:portN]][/[database][?options]]
+    /// ```
+    ///
+    /// # Default
+    ///
+    /// If constructed with [`Default::default`] this value is set to `postgres://stry:stry@localhost:5432/stry`.
+    ///
+    /// # Examples
+    ///
+    /// Connecting to `PostgreSQL`:
+    ///
+    /// ```not_rust
+    /// postgres://stry:stry@localhost:5432/stry
+    /// ```
+    ///
+    /// Connecting with `SQLite`:
+    ///
+    /// ```not_rust
+    /// sqlite://stry.db
+    /// ```
+    ///
+    /// # Warning
+    ///
+    /// The parser for this is very simple and may not be able to understand
+    /// every valid URI.
     pub database: String,
 }
 
@@ -125,7 +175,7 @@ impl Initialize for Config {
     fn init(config: &Anulap<'_>) -> Option<Self> {
         Some(Self {
             ip: config
-                .get_string("ip")
+                .get("ip")
                 .and_then(|value| {
                     let mut parts = value
                         .split('.')
@@ -141,11 +191,11 @@ impl Initialize for Config {
                 })
                 .unwrap_or_else(|| [0, 0, 0, 0]),
             port: config
-                .get_string("port")
+                .get("port")
                 .and_then(|value| value.parse().ok())
                 .unwrap_or(8901),
             database: config
-                .get_string("database")
+                .get("database")
                 .unwrap_or_else(|| String::from("postgres://stry:stry@localhost:5432/stry")),
         })
     }

@@ -19,6 +19,7 @@ with-source-clap = [ "clap" ]
 with-source-ron = [ "ron" ]
 
 [dependencies]
+arrayvec = { version = "0.5", features = [ "serde" ] }
 async-trait = { version= "0.1", optional = true }
 chrono = { version = "0.4", features = [ "serde" ] }
 clap = { version = "2.33", default-features = false, optional = true }

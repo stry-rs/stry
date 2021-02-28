@@ -1,16 +1,20 @@
+//! Database entity models, and utility wrappers and newtypes.
+
 pub mod blog;
 pub mod core;
 pub mod story;
 
 use {
+    crate::utils::nanoid,
+    arrayvec::ArrayString,
     chrono::{DateTime, Utc},
     std::ops::Deref,
 };
 
 crate::newtype! {
-    /// The database entry id newtype, is a `String` by default
+    /// The database entry id newtype, is a [`ArrayString`] by default
     #[derive(serde::Deserialize, serde::Serialize)]
-    Id: String
+    Id: ArrayString<[u8; nanoid::SIZE]>
 }
 
 /// A wrapper type to indicate that a type has no backend id.

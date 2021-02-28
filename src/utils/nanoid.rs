@@ -1,40 +1,57 @@
-use rand::{rngs::StdRng, Rng, SeedableRng};
+#[cfg(feature = "with-nanoid")]
+use {
+    crate::models::Id,
+    arrayvec::ArrayString,
+    rand::{rngs::StdRng, Rng as _, SeedableRng as _},
+    std::panic,
+};
 
-pub fn nanoid() -> String {
-    let alphabet = &[
-        '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-        'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F',
-        'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    ];
+/// How long an entity `Id` is, recommended 6 or above.
+///
+/// # Note
+///
+/// This is only used in the [`Id`] type as its length parameter.
+///
+/// [`Id`]: crate::models::Id
+pub const SIZE: usize = 6;
 
-    let size = 6;
+#[cfg(feature = "with-nanoid")]
+const LEN: usize = 54;
+#[cfg(feature = "with-nanoid")]
+const MASK: usize = LEN.next_power_of_two() - 1;
+#[cfg(feature = "with-nanoid")]
+const STEP: usize = 8 * SIZE / 5;
 
-    assert!(
-        alphabet.len() <= u8::max_value() as usize,
-        "The alphabet cannot be longer than a `u8` (to comply with the `random` function)"
-    );
+#[cfg(feature = "with-nanoid")]
+static ALPHABET: [char; LEN] = [
+    '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+    'm', 'n', 'p', 'q', 'r', 's', 't', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+    'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+];
 
-    let mask = alphabet.len().next_power_of_two() - 1;
-    let step: usize = 8 * size / 5;
-
-    debug_assert!(alphabet.len() <= mask + 1);
-
-    let mut id = String::with_capacity(size);
+/// Returns a new [`Id`] generated using [nanoid](https://github.com/ai/nanoid) with a custom alphabet.
+///
+/// Customized version of [the Rust version](https://github.com/nikolay-govorov/nanoid).
+#[cfg(feature = "with-nanoid")]
+pub fn nanoid() -> Option<Id> {
+    let mut id = ArrayString::<[u8; SIZE]>::new();
 
     loop {
-        let mut rng = StdRng::from_entropy();
-        let mut bytes: Vec<u8> = vec![0; step];
+        // `SeedableRng::from_entropy` can panic if getrandom fails, not sure
+        // the situation in which that could happen but I want to catch it just incase.
+        let mut rng = panic::catch_unwind(StdRng::from_entropy).ok()?;
+        let mut bytes = [0u8; STEP];
 
         rng.fill(&mut bytes[..]);
 
         for &byte in &bytes {
-            let byte = byte as usize & mask;
+            let byte = byte as usize & MASK;
 
-            if alphabet.len() > byte {
-                id.push(alphabet[byte]);
+            if ALPHABET.len() > byte {
+                id.push(ALPHABET[byte]);
 
-                if id.len() == size {
-                    return id;
+                if id.len() == SIZE {
+                    return Some(Id(id));
                 }
             }
         }
