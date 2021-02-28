@@ -1,6 +1,4 @@
-use {
-    crate::models::{blog::Post, story::Story},
-};
+use crate::models::{blog::Post, story::Story, Existing};
 
 /// Universal site settings.
 #[rustfmt::skip]
@@ -23,13 +21,13 @@ pub struct User {
     /// # Variant
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
-    pub stories: Option<Vec<Story>>,
+    pub stories: Option<Vec<Existing<Story>>>,
     /// Stores all the blog posts that the user has.
     ///
     /// # Variant
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
-    pub posts: Option<Vec<Post>>,
+    pub posts: Option<Vec<Existing<Post>>>,
 }
 
 /// User settings for the user themself, ie name, biography, and security details.
@@ -66,7 +64,7 @@ pub struct SettingsAccount {
     /// # Variant
     ///
     /// Is `None` if you aren't accessing a user profile 'view'.
-    pub biography: Option<Vec<Part>>,
+    pub biography: Option<Vec<Existing<Part>>>,
 }
 
 /// User settings for the site itself, ie appearance and notifications.
@@ -98,7 +96,7 @@ pub enum SiteTheme {
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Part {
     pub kind: PartKind,
-    pub comments: Vec<Comment>,
+    pub comments: Vec<Existing<Comment>>,
 }
 
 #[rustfmt::skip]
@@ -120,7 +118,7 @@ pub enum PartKind {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Comment {
-    pub author: User,
-    pub main: Vec<Part>,
-    pub children: Vec<Comment>,
+    pub author: Existing<User>,
+    pub main: Vec<Existing<Part>>,
+    pub children: Vec<Existing<Comment>>,
 }

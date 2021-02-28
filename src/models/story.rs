@@ -16,28 +16,28 @@ pub struct Story {
     pub rating: Rating,
     pub state: State,
 
-    pub authors: Vec<User>,
-    pub commissioners: Vec<User>,
-    pub dedicatees: Vec<User>,
+    pub authors: Vec<Existing<User>>,
+    pub commissioners: Vec<Existing<User>>,
+    pub dedicatees: Vec<Existing<User>>,
 
-    pub origins: Vec<Origin>,
-    pub warnings: Vec<Warning>,
-    pub pairings: Vec<Pairing>,
-    pub characters: Vec<Character>,
-    pub tags: Vec<Tag>,
-
-    /// # Variant
-    ///
-    /// Is `None` when this type is used indirectly (ie in another entity).
-    pub series: Option<Series>,
+    pub origins: Vec<Existing<Origin>>,
+    pub warnings: Vec<Existing<Warning>>,
+    pub pairings: Vec<Existing<Pairing>>,
+    pub characters: Vec<Existing<Character>>,
+    pub tags: Vec<Existing<Tag>>,
 
     /// # Variant
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
-    pub chapters: Option<Vec<Chapter>>,
+    pub series: Option<Existing<Series>>,
+
+    /// # Variant
+    ///
+    /// Is `None` when this type is used indirectly (ie in another entity).
+    pub chapters: Option<Vec<Existing<Chapter>>>,
     pub words: i32,
 
-    pub comments: Vec<Comment>,
+    pub comments: Vec<Existing<Comment>>,
 }
 
 #[rustfmt::skip]
@@ -46,11 +46,11 @@ pub struct Story {
 pub struct Chapter {
     pub name: String,
 
-    pub prefix: Vec<Part>,
-    pub main: Vec<Part>,
-    pub suffix: Vec<Part>,
+    pub prefix: Vec<Existing<Part>>,
+    pub main: Vec<Existing<Part>>,
+    pub suffix: Vec<Existing<Part>>,
 
-    pub comments: Vec<Comment>,
+    pub comments: Vec<Existing<Comment>>,
 
     pub words: i64,
 }
@@ -91,9 +91,10 @@ pub struct Origin {
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Pairing {
     pub hash: String,
+    // TODO: switch to an enum for more possible states
     pub platonic: bool,
 
-    pub characters: Vec<Character>,
+    pub characters: Vec<Existing<Character>>,
 }
 
 #[rustfmt::skip]

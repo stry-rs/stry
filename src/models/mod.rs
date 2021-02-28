@@ -2,7 +2,10 @@ pub mod blog;
 pub mod core;
 pub mod story;
 
-use {chrono::{DateTime, Utc}, std::ops::Deref};
+use {
+    chrono::{DateTime, Utc},
+    std::ops::Deref,
+};
 
 crate::newtype! {
     /// The database entry id newtype, is a `String` by default
