@@ -7,10 +7,17 @@ use crate::models::{blog::Post, story::Story, Existing};
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Settings {
+    /// A unique setting name.
+    ///
+    /// Left as a [`String`] to allow for other modules to use the settings
+    /// without using extension types.
     pub key: String,
+
+    /// The value of the key, encoded as JSON.
     pub value: String,
 }
 
+/// A user of the website, used from displaying authors to signing in.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -24,6 +31,7 @@ pub struct User {
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
     pub stories: Option<Vec<Existing<Story>>>,
+
     /// Stores all the blog posts that the user has.
     ///
     /// # Variant
@@ -55,12 +63,14 @@ pub struct SettingsAccount {
     /// Is only `Some` when returned for login, a email change and for a user
     /// profile 'view'.
     pub email: Option<String>,
+
     /// The hash of the user's password stored as bytes.
     ///
     /// # Variant
     ///
     /// This is only `Some` during a login attempt or password change.
     pub hash: Option<Vec<u8>>,
+
     /// The user's biography in parts.
     ///
     /// # Variant
@@ -78,6 +88,7 @@ pub struct SettingsSite {
     pub theme: SiteTheme,
 }
 
+/// Website theme the user currently has selected, takes precedence over `prefers-color-scheme`.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -98,6 +109,8 @@ pub enum SiteTheme {
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Part {
     pub kind: PartKind,
+
+    /// Any comments on or replying to the current part.
     pub comments: Vec<Existing<Comment>>,
 }
 
@@ -106,7 +119,7 @@ pub struct Part {
 #[derive(serde::Deserialize, serde::Serialize)]
 pub enum PartKind {
     Image { url: String, alt: Option<String>, },
-    Text { content: String, },
+    Text { content: String, words: i64, },
 }
 
 /// A comment made of parts and comments that can be commented on.

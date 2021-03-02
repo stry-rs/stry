@@ -1,5 +1,7 @@
 //! Database entity models, and utility wrappers and newtypes.
 
+// TODO: maybe create an area for users to make notes (or a wiki), like a staging area for stories and chapters
+
 pub mod blog;
 pub mod core;
 pub mod story;
@@ -51,7 +53,14 @@ pub struct Existing<T> {
 
     inner: T,
 
+    /// The time this entity was made.
+    ///
+    /// # Note
+    ///
+    /// Once created this should never change.
     pub created: DateTime<Utc>,
+
+    /// The last time this entity was updated.
     pub updated: DateTime<Utc>,
 }
 
