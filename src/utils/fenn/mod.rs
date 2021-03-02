@@ -7,6 +7,7 @@ mod hash;
 pub mod iter;
 mod newtype;
 mod peep;
+pub mod slice;
 mod string;
 mod vec;
 pub mod vec_map;

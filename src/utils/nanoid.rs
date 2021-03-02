@@ -10,7 +10,8 @@ use {
 ///
 /// # Note
 ///
-/// This is only used in the [`Id`] type as its length parameter.
+/// This is only used in the [`Id`] type as its length parameter and with the
+/// [`nanoid`] output length.
 ///
 /// [`Id`]: crate::models::Id
 pub const SIZE: usize = 6;
