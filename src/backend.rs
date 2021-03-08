@@ -6,6 +6,7 @@ use {
             blog::Post,
             core::{Comment, Part, User},
             story::{Chapter, Character, Origin, Pairing, Series, Story, Tag, Warning},
+            wiki::{Category, Page},
             Existing, Id, New,
         },
         uri::Uri,
@@ -44,22 +45,31 @@ pub trait BackendFactory {
 ///     - [`Story`]
 ///     - [`Tag`]
 ///     - [`Warning`]
+///   - Wiki Types
+///     - [`Category`]
+///     - [`Page`]
 #[cfg(feature = "with-backend")]
 #[rustfmt::skip]
 #[async_trait::async_trait]
 pub trait Backend<Err>:
-    BackendEntry<Chapter, Err>
-    + BackendEntry<Character, Err>
+    // Core
+    BackendEntry<User, Err>
     + BackendEntry<Comment, Err>
-    + BackendEntry<Origin, Err>
-    + BackendEntry<Pairing, Err>
     + BackendEntry<Part, Err>
+    // Blog
     + BackendEntry<Post, Err>
-    + BackendEntry<Series, Err>
-    + BackendEntry<Story, Err>
-    + BackendEntry<Tag, Err>
-    + BackendEntry<User, Err>
+    // Story
+    + BackendEntry<Chapter, Err>
+    + BackendEntry<Origin, Err>
     + BackendEntry<Warning, Err>
+    + BackendEntry<Pairing, Err>
+    + BackendEntry<Character, Err>
+    + BackendEntry<Tag, Err>
+    + BackendEntry<Story, Err>
+    + BackendEntry<Series, Err>
+    // Wiki
+    + BackendEntry<Category, Err>
+    + BackendEntry<Page, Err>
 where
     Err: Error,
 {

@@ -118,6 +118,7 @@ pub struct Part {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub enum PartKind {
+    Heading { level: u8 },
     Image { url: String, alt: Option<String>, },
     Text { content: String, words: i64, },
 }

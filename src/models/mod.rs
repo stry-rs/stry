@@ -5,6 +5,7 @@
 pub mod blog;
 pub mod core;
 pub mod story;
+pub mod wiki;
 
 use {
     crate::utils::nanoid,
