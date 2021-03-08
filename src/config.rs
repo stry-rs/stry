@@ -1,9 +1,9 @@
 //! Init config information, everything else is handled though the frontend.
 
-use crate::anulap::{Anulap, Initialize};
+use crate::layered::{Anulap, Initialize};
 
 #[cfg(any(feature = "with-source-clap", feature = "with-source-on"))]
-use crate::anulap::Source;
+use crate::layered::Source;
 
 /// A config layer source that pulls values from a clap `ArgMatches`.
 #[cfg(feature = "with-source-clap")]
