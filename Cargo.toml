@@ -11,7 +11,7 @@ repository = "https://github.com/stry-rs/common"
 license = "MIT"
 
 [features]
-default = [ "with-backend" ]
+default = [ "with-backend", "with-nanoid", "with-source-clap", "with-source-ron" ]
 
 with-backend = [ "async-trait" ]
 with-nanoid = [ "rand" ]
