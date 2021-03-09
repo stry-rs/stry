@@ -62,6 +62,13 @@ pub struct Chapter {
     /// To display use the default title (`Chapter {number}`) if is [`None`].
     pub name: Option<String>,
 
+    /// Marks the chapter was published allowing non authors to view it.
+    ///
+    /// # Note
+    ///
+    /// Even when `true` a chapter can still be edited.
+    pub published: bool,
+
     /// The parts the make up the beginning author's note.
     ///
     /// # Note
