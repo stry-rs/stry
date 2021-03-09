@@ -1,5 +1,8 @@
+//! Site wide and user wiki, allowing for history and notes on anything needed.
+
 use crate::models::{Existing, core::Part};
 
+/// A wiki page and its related data.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -11,6 +14,7 @@ pub struct Page {
     pub categories: Vec<Existing<Category>>,
 }
 
+/// A category that can be used to separate pages into groups.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
