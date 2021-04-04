@@ -1,7 +1,6 @@
 //! A simple parser for database connection URIs.
 
 use std::{
-    borrow::Cow,
     collections::BTreeMap,
     convert::TryFrom,
     error::Error,
@@ -27,7 +26,7 @@ pub struct Uri {
     pub scheme: String,
 
     pub username: Option<String>,
-    pub password: Option<Vec<u8>>,
+    pub password: Option<String>,
 
     pub hosts: Vec<String>,
     pub ports: Vec<u16>,
@@ -76,7 +75,7 @@ impl Uri {
 
     pub fn password<P>(mut self, password: P) -> Self
     where
-        P: Into<Vec<u8>>,
+        P: Into<String>,
     {
         self.password = Some(password.into());
 
@@ -206,7 +205,7 @@ impl<'s> Parser<'s> {
         }
     }
 
-    fn parse_credentials(&mut self) -> Result<(Option<String>, Option<Vec<u8>>), UriError> {
+    fn parse_credentials(&mut self) -> Result<(Option<String>, Option<String>), UriError> {
         match take_until!(self.text, '@') {
             Some(taken) => {
                 let mut it = taken.splitn(2, ':');
@@ -220,7 +219,7 @@ impl<'s> Parser<'s> {
 
                 Ok((
                     Some(username.to_string()),
-                    Some(Cow::from(password).to_vec()),
+                    Some(password.decode_utf8()?.to_string()),
                 ))
             }
             None => Ok((None, None)),
