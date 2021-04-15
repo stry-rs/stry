@@ -144,10 +144,18 @@ pub struct Origin {
 pub struct Pairing {
     pub hash: String,
 
-    // TODO: switch to an enum for more possible states
-    pub platonic: bool,
+    pub relationship: Relationship,
 
     pub characters: Vec<Existing<Character>>,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum Relationship {
+    Family,
+    Friends,
+    Romantic,
 }
 
 // TODO: a description/tooltip of some kind, maybe create a wiki or something?
