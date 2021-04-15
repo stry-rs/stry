@@ -117,7 +117,6 @@ pub struct Series {
     pub stories: Either<Vec<Existing<Story>>, Vec<Id>>,
 }
 
-// TODO: a description/tooltip of some kind, maybe create a wiki or something?
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -127,7 +126,6 @@ pub struct Character {
     pub description: String,
 }
 
-// TODO: a description/tooltip of some kind, maybe create a wiki or something?
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -137,7 +135,6 @@ pub struct Origin {
     pub description: String,
 }
 
-// TODO: a description/tooltip of some kind, maybe create a wiki or something?
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -158,7 +155,6 @@ pub enum Relationship {
     Romantic,
 }
 
-// TODO: a description/tooltip of some kind, maybe create a wiki or something?
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -168,7 +164,6 @@ pub struct Tag {
     pub description: String,
 }
 
-// TODO: a description/tooltip of some kind, maybe create a wiki or something?
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
