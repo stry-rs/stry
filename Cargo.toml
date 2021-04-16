@@ -11,20 +11,16 @@ repository = "https://github.com/stry-rs/common"
 license = "MIT"
 
 [features]
-default = [ "with-backend", "with-nanoid", "with-source-clap", "with-source-ron" ]
+default = [ "with-backend", "with-nanoid" ]
 
 with-backend = [ "async-trait" ]
 with-nanoid = [ "rand" ]
-with-source-clap = [ "clap" ]
-with-source-ron = [ "ron" ]
 
 [dependencies]
 arrayvec = { version = "0.5", features = [ "serde" ] }
 async-trait = { version= "0.1", optional = true }
 chrono = { version = "0.4", features = [ "serde" ] }
-clap = { version = "2.33", default-features = false, optional = true }
 either = { version = "1.6", features = [ "serde" ] }
 percent-encoding = "2.1"
 rand = { version = "0.8", optional = true }
-ron = { version = "0.6", optional = true }
 serde = { version = "1.0", features = [ "derive" ] }
