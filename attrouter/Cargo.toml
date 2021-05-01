@@ -1,0 +1,26 @@
+[package]
+name = "stry-attrouter"
+version = "0.1.0"
+authors = [ "Txuritan <txuritan@protonmail.com>" ]
+edition = "2018"
+
+description = "A attribute based router for various Rust web servers."
+documentation = "https://docs.rs/stry-attrouter"
+repository = "https://gitlab.com/stry-rs/attrouter"
+
+license = "MIT"
+
+workspace = ".."
+
+[lib]
+proc-macro = true
+
+[features]
+default = [ "with-warp" ]
+with-tide = []
+with-warp = []
+
+[dependencies]
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "1.0", features = [ "full" ] }
