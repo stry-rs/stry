@@ -1,5 +1,7 @@
 [workspace]
 members = [
+    "xtask",
+
     # 'external' crates
     "attrouter",
     "attrouter/tests-warp",
