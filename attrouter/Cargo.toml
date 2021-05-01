@@ -1,9 +1,3 @@
-[workspace]
-members = [
-    ".",
-    "tests-warp",
-]
-
 [package]
 name = "stry-attrouter"
 version = "0.1.0"
@@ -15,6 +9,8 @@ documentation = "https://docs.rs/stry-attrouter"
 repository = "https://gitlab.com/stry-rs/attrouter"
 
 license = "MIT"
+
+workspace = ".."
 
 [lib]
 proc-macro = true

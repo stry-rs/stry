@@ -8,6 +8,8 @@ description = "A HTML to Markdown converter and soon to be formatter."
 
 license = "MIT"
 
+workspace = ".."
+
 [features]
 default = [ "with-rcdom" ]
 with-arcdom = [ "markup5ever_arcdom" ]

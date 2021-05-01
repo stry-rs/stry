@@ -10,6 +10,8 @@ repository = "https://github.com/stry-rs/common"
 
 license = "MIT"
 
+workspace = ".."
+
 [features]
 default = [ "with-backend", "with-nanoid" ]
 

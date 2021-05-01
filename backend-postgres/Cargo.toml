@@ -10,6 +10,8 @@ repository = "https://gitlab.com/stry-rs/backend-postgres"
 
 license = "MIT"
 
+workspace = ".."
+
 [dependencies]
 async-trait = "0.1"
 chrono = "0.4.19"

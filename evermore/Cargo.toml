@@ -10,6 +10,8 @@ repository = "https://gitlab.com/stry-rs/evermore"
 
 license = "MIT"
 
+workspace = ".."
+
 [features]
 with-log = [ "log" ]
 with-tracing = [ "tracing", "tracing-futures" ]

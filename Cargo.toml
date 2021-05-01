@@ -1,0 +1,12 @@
+[workspace]
+members = [
+    # 'external' crates
+    "attrouter",
+    "attrouter/tests-warp",
+    "evermore",
+    "remark",
+
+    # stry crates
+    "backend-postgres",
+    "common",
+]
