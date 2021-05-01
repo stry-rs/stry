@@ -1,0 +1,17 @@
+[package]
+name = "stry-backend-postgres"
+version = "0.1.0"
+authors = ["Txuritan <txuritan@protonmail.com>"]
+edition = "2018"
+
+description = "The PostgreSQL database backend for stry."
+documentation = "https://docs.rs/stry-backend-postgres/"
+repository = "https://gitlab.com/stry-rs/backend-postgres"
+
+license = "MIT"
+
+[dependencies]
+async-trait = "0.1"
+chrono = "0.4.19"
+sqlx = { version = "0.5", features = [ "runtime-tokio-native-tls", "postgres", "chrono" ] }
+stry-common = "0.1"
