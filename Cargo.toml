@@ -12,3 +12,9 @@ members = [
     "backend-postgres",
     "common",
 ]
+
+[patch.crates-io]
+phf = { git = "https://github.com/benesch/rust-phf", rev = "e387f69540138026ab679537322c94500876fe8d" }
+phf_codegen = { git = "https://github.com/benesch/rust-phf", rev = "e387f69540138026ab679537322c94500876fe8d" }
+phf_generator = { git = "https://github.com/benesch/rust-phf", rev = "e387f69540138026ab679537322c94500876fe8d" }
+phf_shared = { git = "https://github.com/benesch/rust-phf", rev = "e387f69540138026ab679537322c94500876fe8d" }
