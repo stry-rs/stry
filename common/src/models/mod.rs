@@ -17,7 +17,7 @@ use {
 crate::newtype! {
     /// The database entry id newtype, is a [`ArrayString`] by default
     #[derive(serde::Deserialize, serde::Serialize)]
-    Id: ArrayString<[u8; nanoid::SIZE]>
+    Id: ArrayString<{nanoid::SIZE}>
 }
 
 /// A wrapper type to indicate that a type has no backend id.
