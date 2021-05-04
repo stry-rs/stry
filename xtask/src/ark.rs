@@ -91,6 +91,114 @@ pub mod parser {
         ) -> Option<Self>
         where
             Self: Sized;
+
+        fn parse_generics(
+            lexer: &mut Peekable<FilteredLexer<'i>>,
+            errors: &mut Vec<Error<'i>>,
+        ) -> Option<Vec<Type<'i>>> {
+            match lexer.peek()? {
+                _token if _token.kind == TokenKind::LessThan => {
+                    let mut generics: Vec<Type<'i>> = Vec::new();
+
+                    take!(lexer, errors: [
+                        TokenKind::LessThan => |token| {},
+                    ]);
+
+                    loop {
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::GreaterThan => break,
+                            _ => {}
+                        }
+
+                        let typ: Type<'i> = Type::parse(lexer, errors)?;
+
+                        generics.push(typ);
+
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::Comma => {
+                                take!(lexer, errors: [
+                                    TokenKind::Comma => |_token| {},
+                                ]);
+                            }
+                            _ => break,
+                        }
+                    }
+
+                    take!(lexer, errors: [
+                        TokenKind::GreaterThan => |token| {},
+                    ]);
+
+                    Some(generics)
+                }
+                _token if _token.kind == TokenKind::Colon => None,
+                _token => {
+                    errors.push(Error {
+                        span: Span {
+                            input: _token.span.input,
+                            range: _token.span.range.clone(),
+                        },
+                        got: _token.kind,
+                        expected: vec![TokenKind::LessThan, TokenKind::Colon],
+                    });
+
+                    None
+                }
+            }
+        }
+
+        // parses: ident < generics > :: kind
+        fn parse_header(
+            function: bool,
+            lexer: &mut Peekable<FilteredLexer<'i>>,
+            errors: &mut Vec<Error<'i>>,
+        ) -> Option<(Ident<'i>, Option<Vec<Type<'i>>>, Token<'i>)> {
+            take!(lexer, errors: [
+                TokenKind::Ident => |ident| {
+                    let name = Ident {
+                        span: ident.span,
+                    };
+
+                    let generics: Option<Vec<Type<'i>>> = <Self as Ast>::parse_generics(lexer, errors);
+
+                    take!(lexer, errors: [
+                        TokenKind::Colon => |_token| {},
+                    ]);
+                    take!(lexer, errors: [
+                        TokenKind::Colon => |_token| {},
+                    ]);
+
+                    let mut kind = None;
+
+                    if function {
+                        take!(lexer, errors: [
+                            TokenKind::Function => |_kind| {
+                                kind = Some(_kind);
+                            },
+                        ]);
+                    } else {
+                        take!(lexer, errors: [
+                            TokenKind::Enum => |_kind| {
+                                kind = Some(_kind);
+                            },
+                            TokenKind::Service => |_kind| {
+                                kind = Some(_kind);
+                            },
+                            TokenKind::Type => |_kind| {
+                                kind = Some(_kind);
+                            },
+                        ]);
+                    }
+
+                    return kind.map(|kind| (
+                        name,
+                        generics,
+                        kind,
+                    ));
+                },
+            ]);
+
+            None
+        }
     }
 
     pub struct Parser<'i> {
@@ -114,18 +222,45 @@ pub mod parser {
         }
     }
 
-    // TODO: finish ast
     #[derive(Debug, PartialEq)]
     pub struct File<'i> {
         pub stmts: Vec<Stmt<'i>>,
     }
 
-    // TODO: finish ast
+    impl<'i> Ast<'i> for File<'i> {
+        fn parse(
+            lexer: &mut Peekable<FilteredLexer<'i>>,
+            errors: &mut Vec<Error<'i>>,
+        ) -> Option<Self>
+        where
+            Self: Sized,
+        {
+            let mut stmts = Vec::new();
+
+            loop {
+                match lexer.peek() {
+                    Some(token) if token.kind == TokenKind::Ident => {}
+                    _ => break,
+                }
+
+                let stmt = Stmt::parse(lexer, errors)?;
+
+                stmts.push(stmt);
+
+                match lexer.peek() {
+                    Some(token) if token.kind == TokenKind::Ident => {}
+                    _ => break,
+                }
+            }
+
+            Some(File { stmts })
+        }
+    }
+
     #[derive(Debug, PartialEq)]
     pub enum Stmt<'i> {
         Enum {
             name: Ident<'i>,
-            generics: Vec<Type<'i>>,
             variants: Vec<Ident<'i>>,
         },
         Service {
@@ -137,6 +272,244 @@ pub mod parser {
             generics: Vec<Type<'i>>,
             fields: Vec<Field<'i>>,
         },
+    }
+
+    impl<'i> Ast<'i> for Stmt<'i> {
+        fn parse(
+            lexer: &mut Peekable<FilteredLexer<'i>>,
+            errors: &mut Vec<Error<'i>>,
+        ) -> Option<Self>
+        where
+            Self: Sized,
+        {
+            let (name, generics, kind) = <Self as Ast>::parse_header(false, lexer, errors)?;
+
+            take!(lexer, errors: [
+                TokenKind::OpenBrace => |_token| {},
+            ]);
+
+            let ret = match kind.kind {
+                TokenKind::Enum => {
+                    let mut variants = Vec::new();
+
+                    loop {
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::CloseBrace => break,
+                            _ => {}
+                        }
+
+                        take!(lexer, errors: [
+                            TokenKind::Ident => |_token| {
+                                variants.push(Ident {
+                                    span: Span {
+                                        input: _token.span.input,
+                                        range: _token.span.range.clone(),
+                                    },
+                                });
+                            },
+                        ]);
+
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::Ident => {}
+                            _ => break,
+                        }
+                    }
+
+                    Some(Stmt::Enum { name, variants })
+                }
+                TokenKind::Service => {
+                    let mut functions = Vec::new();
+
+                    loop {
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::CloseBrace => break,
+                            _ => {}
+                        }
+
+                        let function: Function<'i> = Function::parse(lexer, errors)?;
+
+                        functions.push(function);
+
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::Comma => {
+                                take!(lexer, errors: [
+                                    TokenKind::Comma => |_token| {},
+                                ]);
+                            }
+                            token if token.kind == TokenKind::Ident => {}
+                            _ => break,
+                        }
+                    }
+
+                    Some(Stmt::Service { name, functions })
+                }
+                TokenKind::Type => {
+                    let mut fields = Vec::new();
+
+                    loop {
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::CloseBrace => break,
+                            _ => {}
+                        }
+
+                        let field: Field<'i> = Field::parse(lexer, errors)?;
+
+                        fields.push(field);
+
+                        match lexer.peek()? {
+                            token if token.kind == TokenKind::Comma => {
+                                take!(lexer, errors: [
+                                    TokenKind::Comma => |_token| {},
+                                ]);
+                            }
+                            _ => break,
+                        }
+                    }
+
+                    Some(Stmt::Type {
+                        name,
+                        generics: generics.unwrap_or_else(Vec::new),
+                        fields,
+                    })
+                }
+                _ => None,
+            };
+
+            take!(lexer, errors: [
+                TokenKind::CloseBrace => |_token| {},
+            ]);
+
+            ret
+        }
+    }
+
+    #[test]
+    fn test_stmt_enum() {
+        let input = "Rating :: enum { Teen General }";
+        let mut parser = Parser::new(Lexer::new(input));
+
+        assert_eq!(
+            Some(Stmt::Enum {
+                name: Ident {
+                    span: Span { input, range: 0..6 },
+                },
+                variants: vec![
+                    Ident {
+                        span: Span {
+                            input,
+                            range: 17..21,
+                        },
+                    },
+                    Ident {
+                        span: Span {
+                            input,
+                            range: 22..29,
+                        },
+                    },
+                ],
+            }),
+            parser.parse::<Stmt>(),
+            "{:?}",
+            parser.errors,
+        );
+    }
+
+    #[test]
+    fn test_stmt_service() {
+        let input = "Query :: service { age <P> :: fn (person: P) -> Int }";
+        let mut parser = Parser::new(Lexer::new(input));
+
+        assert_eq!(
+            Some(Stmt::Service {
+                name: Ident {
+                    span: Span { input, range: 0..5 },
+                },
+                functions: vec![Function {
+                    name: Ident {
+                        span: Span {
+                            input,
+                            range: 19..22,
+                        },
+                    },
+                    generics: vec![Type::Standard {
+                        typ: Ident {
+                            span: Span {
+                                input,
+                                range: 24..25,
+                            },
+                        },
+                    },],
+                    fields: vec![Field {
+                        name: Ident {
+                            span: Span {
+                                input,
+                                range: 34..40,
+                            },
+                        },
+                        typ: Type::Standard {
+                            typ: Ident {
+                                span: Span {
+                                    input,
+                                    range: 42..43,
+                                },
+                            },
+                        },
+                    },],
+                    ret: Type::Standard {
+                        typ: Ident {
+                            span: Span {
+                                input,
+                                range: 48..51,
+                            },
+                        },
+                    },
+                },],
+            }),
+            parser.parse::<Stmt>(),
+            "{:?}",
+            parser.errors,
+        );
+    }
+
+    #[test]
+    fn test_stmt_type() {
+        let input = "Character <A> :: type { age: A }";
+        let mut parser = Parser::new(Lexer::new(input));
+
+        assert_eq!(
+            Some(Stmt::Type {
+                name: Ident {
+                    span: Span { input, range: 0..9 },
+                },
+                generics: vec![Type::Standard {
+                    typ: Ident {
+                        span: Span {
+                            input,
+                            range: 11..12,
+                        },
+                    },
+                },],
+                fields: vec![Field {
+                    name: Ident {
+                        span: Span {
+                            input,
+                            range: 24..27,
+                        },
+                    },
+                    typ: Type::Standard {
+                        typ: Ident {
+                            span: Span {
+                                input,
+                                range: 29..30,
+                            },
+                        },
+                    },
+                },],
+            }),
+            parser.parse::<Stmt>(),
+            "{:?}",
+            parser.errors,
+        );
     }
 
     #[derive(Debug, PartialEq)]
@@ -262,13 +635,148 @@ pub mod parser {
         );
     }
 
-    // TODO: finish ast
     #[derive(Debug, PartialEq)]
     pub struct Function<'i> {
         pub name: Ident<'i>,
         pub generics: Vec<Type<'i>>,
         pub fields: Vec<Field<'i>>,
         pub ret: Type<'i>,
+    }
+
+    impl<'i> Ast<'i> for Function<'i> {
+        fn parse(
+            lexer: &mut Peekable<FilteredLexer<'i>>,
+            errors: &mut Vec<Error<'i>>,
+        ) -> Option<Self>
+        where
+            Self: Sized,
+        {
+            let (name, generics, _kind) = <Self as Ast>::parse_header(true, lexer, errors)?;
+
+            take!(lexer, errors: [
+                TokenKind::OpenParen => |_token| {},
+            ]);
+
+            let mut fields = Vec::new();
+
+            loop {
+                match lexer.peek()? {
+                    token if token.kind == TokenKind::CloseParen => break,
+                    _ => {}
+                }
+
+                let field: Field<'i> = Field::parse(lexer, errors)?;
+
+                fields.push(field);
+
+                match lexer.peek()? {
+                    token if token.kind == TokenKind::Comma => {
+                        take!(lexer, errors: [
+                            TokenKind::Comma => |_token| {},
+                        ]);
+                    }
+                    _ => break,
+                }
+            }
+
+            take!(lexer, errors: [
+                TokenKind::CloseParen => |_token| {},
+            ]);
+
+            take!(lexer, errors: [
+                TokenKind::Minus => |_token| {},
+            ]);
+
+            take!(lexer, errors: [
+                TokenKind::GreaterThan => |token| {},
+            ]);
+
+            let typ: Type<'i> = Type::parse(lexer, errors)?;
+
+            Some(Function {
+                name,
+                generics: generics.unwrap_or_else(Vec::new),
+                fields,
+                ret: typ,
+            })
+        }
+    }
+
+    #[test]
+    fn test_function_with() {
+        let input = "age <P> :: fn (person: P) -> Int";
+        let mut parser = Parser::new(Lexer::new(input));
+
+        assert_eq!(
+            Some(Function {
+                name: Ident {
+                    span: Span { input, range: 0..3 },
+                },
+                generics: vec![Type::Standard {
+                    typ: Ident {
+                        span: Span { input, range: 5..6 },
+                    },
+                },],
+                fields: vec![Field {
+                    name: Ident {
+                        span: Span {
+                            input,
+                            range: 15..21,
+                        },
+                    },
+                    typ: Type::Standard {
+                        typ: Ident {
+                            span: Span {
+                                input,
+                                range: 23..24,
+                            },
+                        },
+                    }
+                }],
+                ret: Type::Standard {
+                    typ: Ident {
+                        span: Span {
+                            input,
+                            range: 29..32,
+                        },
+                    },
+                },
+            }),
+            parser.parse::<Function>(),
+            "{:?}",
+            parser.errors,
+        );
+    }
+
+    #[test]
+    fn test_function_without() {
+        let input = "age <P> :: fn () -> Int";
+        let mut parser = Parser::new(Lexer::new(input));
+
+        assert_eq!(
+            Some(Function {
+                name: Ident {
+                    span: Span { input, range: 0..3 },
+                },
+                generics: vec![Type::Standard {
+                    typ: Ident {
+                        span: Span { input, range: 5..6 },
+                    },
+                },],
+                fields: vec![],
+                ret: Type::Standard {
+                    typ: Ident {
+                        span: Span {
+                            input,
+                            range: 20..23,
+                        },
+                    },
+                },
+            }),
+            parser.parse::<Function>(),
+            "{:?}",
+            parser.errors,
+        );
     }
 
     #[derive(Debug, PartialEq)]
@@ -310,26 +818,7 @@ pub mod parser {
                 TokenKind::Ident => |token| {
                     match lexer.peek() {
                         Some(_token) if _token.kind == TokenKind::LessThan => {
-                            take!(lexer, errors: [
-                                TokenKind::LessThan => |token| {},
-                            ]);
-
-                            let mut generics = Vec::new();
-
-                            loop {
-                                let typ: Type<'i> = Type::parse(lexer, errors)?;
-
-                                generics.push(typ);
-
-                                match lexer.peek()? {
-                                    token if token.kind == TokenKind::Comma => {}
-                                    _ => break,
-                                }
-                            }
-
-                            take!(lexer, errors: [
-                                TokenKind::GreaterThan => |token| {},
-                            ]);
+                            let generics = <Self as Ast>::parse_generics(lexer, errors);
 
                             return Some(
                                 Type::Generic {
@@ -339,7 +828,7 @@ pub mod parser {
                                             range: token.span.range.clone(),
                                         },
                                     },
-                                    generics,
+                                    generics: generics.unwrap_or_else(Vec::new),
                                 }
                             );
                         }
@@ -434,17 +923,19 @@ pub mod lexer {
         pub kind: TokenKind,
     }
 
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum TokenKind {
         // implementation
         Ident,
 
         // keywords
         Enum,
+        Function,
         Service,
         Type,
 
         // symbols
+        Minus,
         Comma,
         Colon,
         GreaterThan,
@@ -499,6 +990,7 @@ pub mod lexer {
                 Some((i, c)) => {
                     let (kind, range) = match c {
                         // symbols
+                        '-' => (TokenKind::Minus, i..(i + 1)),
                         ',' => (TokenKind::Comma, i..(i + 1)),
                         ':' => (TokenKind::Colon, i..(i + 1)),
                         '>' => (TokenKind::GreaterThan, i..(i + 1)),
@@ -537,6 +1029,7 @@ pub mod lexer {
 
                             match &self.input[range.clone()] {
                                 "enum" => (TokenKind::Enum, range),
+                                "fn" => (TokenKind::Function, range),
                                 "service" => (TokenKind::Service, range),
                                 "type" => (TokenKind::Type, range),
                                 _ => (kind, range),

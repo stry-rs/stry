@@ -31,12 +31,12 @@ Character :: type {
 
 
 Query :: service {
-    characters(
+    characters :: fn (
         first: Int,
         last: Int,
         before: String,
         after: String,
-    ): Connection <Character>
+    ) -> Connection <Character>
 }
 
 Mutation :: service {}
