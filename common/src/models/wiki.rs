@@ -1,6 +1,9 @@
 //! Site wide and user wiki, allowing for history and notes on anything needed.
 
-use {crate::models::{Existing, core::Part}, chrono::{DateTime, Utc}};
+use {
+    crate::models::{core::Part, Existing},
+    chrono::{DateTime, Utc},
+};
 
 /// A wiki page and its related data.
 #[rustfmt::skip]

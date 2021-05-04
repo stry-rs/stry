@@ -16,6 +16,10 @@ pub fn generate<'i>(
     } else if cfg!(feature = "with-tide") {
         todo!()
     } else {
-        Err(syn::Error::new_spanned(item, "Either feature `with-tide` or `with-warp` must be enabled for this crate.").to_compile_error())
+        Err(syn::Error::new_spanned(
+            item,
+            "Either feature `with-tide` or `with-warp` must be enabled for this crate.",
+        )
+        .to_compile_error())
     }
 }

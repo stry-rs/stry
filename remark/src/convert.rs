@@ -6,7 +6,7 @@ use {
 #[cfg(feature = "with-arcdom")]
 use markup5ever_arcdom::{ArcDom as Dom, Handle, NodeData};
 #[cfg(feature = "with-rcdom")]
-use markup5ever_rcdom::{RcDom as Dom, Handle, NodeData};
+use markup5ever_rcdom::{Handle, NodeData, RcDom as Dom};
 
 pub fn convert(body: impl AsRef<str>) -> io::Result<String> {
     let mut body = body.as_ref().as_bytes();

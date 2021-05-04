@@ -371,7 +371,10 @@ where
                             *generation += 1;
 
                             #[cfg(any(feature = "with-log", feature = "with-tracing"))]
-                            #[cfg_attr(any(feature = "with-log", feature = "with-tracing"), allow(clippy::used_underscore_binding))]
+                            #[cfg_attr(
+                                any(feature = "with-log", feature = "with-tracing"),
+                                allow(clippy::used_underscore_binding)
+                            )]
                             let err: E = _e;
 
                             #[cfg(feature = "with-log")]

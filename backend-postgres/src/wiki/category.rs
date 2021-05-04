@@ -1,8 +1,8 @@
 use {
     crate::{PostgresBackend, PostgresBackendError},
     stry_common::{
-        backend::{BackendEntry},
-        models::{Existing, Id, New, wiki::Category},
+        backend::BackendEntry,
+        models::{wiki::Category, Existing, Id, New},
     },
 };
 
