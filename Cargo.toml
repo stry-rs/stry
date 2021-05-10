@@ -5,12 +5,16 @@ members = [
     # 'external' crates
     "attrouter",
     "attrouter/tests-warp",
+    "clockwork",
     "evermore",
     "remark",
+    "syndrome",
 
     # stry crates
     "backend-postgres",
     "common",
+    "service-all",
+    "service-graphql",
 ]
 
 [patch.crates-io]

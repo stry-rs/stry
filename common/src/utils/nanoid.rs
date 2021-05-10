@@ -35,7 +35,7 @@ static ALPHABET: [char; LEN] = [
 /// Customized version of [the Rust version](https://github.com/nikolay-govorov/nanoid).
 #[cfg(feature = "with-nanoid")]
 pub fn nanoid() -> Option<Id> {
-    let mut id = ArrayString::<{SIZE}>::new();
+    let mut id = ArrayString::<{ SIZE }>::new();
 
     loop {
         // `SeedableRng::from_entropy` can panic if getrandom fails, not sure

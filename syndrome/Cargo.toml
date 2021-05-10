@@ -1,0 +1,13 @@
+[package]
+name = "syndrome"
+version = "0.1.0"
+authors = [ "Txuritan <txuritan@protonmail.com>" ]
+edition = "2018"
+
+workspace = ".."
+
+[dependencies]
+anyhow = "1.0"
+futures-util = "0.3"
+hyper = { version = "0.14", features = [ "server", "http1", "http2", "tcp" ] }
+tracing = "0.1"
