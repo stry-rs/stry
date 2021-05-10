@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Contrast } from "$lib/types";
+	import { Contrast } from "../types";
 
 	export let href: string;
 	export let contrast: Contrast = Contrast.High;

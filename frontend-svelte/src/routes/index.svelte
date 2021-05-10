@@ -3,10 +3,10 @@
 </script>
 
 <script lang="ts">
-	import type { IStory } from "$lib/types";
-	import { PartKind, Rating, State } from "$lib/types";
+	import type { IStory } from "../types";
+	import { PartKind, Rating, State } from "../types";
 
-	import CardStory from '$lib/components/CardStory.svelte';
+	import CardStory from '$lib/CardStory.svelte';
 
 	let stories: IStory[] = [
 		{

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import NavbarEntry from "$lib/components/HeaderEntry.svelte";
-	import NavbarUser from "$lib/components/HeaderUser.svelte";
+	import NavbarEntry from "$lib/HeaderEntry.svelte";
+	import NavbarUser from "$lib/HeaderUser.svelte";
 
 	export let segment: string | undefined;
 

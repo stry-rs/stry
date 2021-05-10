@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { IStory } from "$lib/types";
-	import { Contrast, PartKind, TagKind } from "$lib/types";
+	import type { IStory } from "../types";
+	import { Contrast, PartKind, TagKind } from "../types";
 
-	import Link from "$lib/components/Link.svelte";
-	import MediaObject from "$lib/components/MediaObject.svelte";
+	import Link from "$lib/Link.svelte";
+	import MediaObject from "$lib/MediaObject.svelte";
 
-	import CardStoryTile from "$lib/components/CardStoryTile.svelte";
-	import Tag from "$lib/components/Tag.svelte";
+	import CardStoryTile from "$lib/CardStoryTile.svelte";
+	import Tag from "$lib/Tag.svelte";
 
 	export let story: IStory;
 </script>

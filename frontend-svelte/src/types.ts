@@ -91,20 +91,30 @@ export enum TagKind {
 }
 
 export class TagKindUtil {
-    public static asPathPrefix(kind: TagKind): string {
-        switch (kind) {
-            case TagKind.Warning:
-                return "/warning/";
-            case TagKind.Pairing:
-            case TagKind.PairingMinor:
-                return "/pairing/";
-            case TagKind.Character:
-            case TagKind.CharacterMinor:
-                return "/character/";
-            case TagKind.General:
-                return "/tag/";
-            default:
-                return "/";
-        }
-    }
+	public static isMinor(kind: TagKind): boolean {
+		switch (kind) {
+			case TagKind.PairingMinor:
+			case TagKind.CharacterMinor:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	public static asPathPrefix(kind: TagKind): string {
+		switch (kind) {
+			case TagKind.Warning:
+				return "/warning/";
+			case TagKind.Pairing:
+			case TagKind.PairingMinor:
+				return "/pairing/";
+			case TagKind.Character:
+			case TagKind.CharacterMinor:
+				return "/character/";
+			case TagKind.General:
+				return "/tag/";
+			default:
+				return "/";
+		}
+	}
 }
