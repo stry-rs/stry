@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Rating, State } from "../types";
+	import { Rating, State } from "../utils/types";
 
 	export let rating: Rating;
 	export let warning: boolean;

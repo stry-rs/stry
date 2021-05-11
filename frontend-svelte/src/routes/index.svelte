@@ -3,8 +3,8 @@
 </script>
 
 <script lang="ts">
-	import type { IStory } from "../types";
-	import { PartKind, Rating, State } from "../types";
+	import type { IStory } from "../utils/types";
+	import { PartKind, Rating, State } from "../utils/types";
 
 	import CardStory from '$lib/CardStory.svelte';
 
@@ -124,7 +124,7 @@
 </script>
 
 <svelte:head>
-	<title>home | story</title>
+	<title>home | stry</title>
 </svelte:head>
 
 {#each stories as story (story.id)}

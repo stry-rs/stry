@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { IStory } from "../types";
-	import { Contrast, PartKind, TagKind } from "../types";
+	import type { IStory } from "../utils/types";
+	import { Contrast, PartKind, TagKind } from "../utils/types";
 
 	import Link from "$lib/Link.svelte";
 	import MediaObject from "$lib/MediaObject.svelte";

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TagKind, TagKindUtil } from "../types";
+	import { TagKind, TagKindUtil } from "../utils/types";
 
 	export let id: string;
 	export let kind: TagKind;

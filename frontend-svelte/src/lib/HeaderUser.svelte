@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
 
+	import clickOutside from "../utils/clickout";
+
 	let open = false;
 </script>
 
-<div class="ml-3 relative">
+<div class="ml-3 relative" use:clickOutside={() => { if (open) { open = false; } }}>
 	<div>
 		<button
 			type="button"
