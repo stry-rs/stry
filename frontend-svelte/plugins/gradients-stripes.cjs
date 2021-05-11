@@ -1,16 +1,27 @@
 const _ = require('lodash');
 const plugin = require('tailwindcss/plugin');
 
+const percentToHex = (p) => {
+    const percent = Math.max(0, Math.min(100, p));
+    const intValue = Math.round(percent / 100 * 255);
+    const hexValue = intValue.toString(16);
+    return hexValue.padStart(2, '0').toUpperCase();
+}
+
 module.exports = plugin(function({ addUtilities, e, theme, variants }) {
     const stripes = theme('stripes', {});
     const stripesVariants = variants('stripes', []);
 
-    const utilities = _.map(stripes, ([normal, dark], name) => ({
-        [`.${e(`gradient-stripes-${name}`)}`]: {
-            backgroundImage: `linear-gradient(135deg, ${normal} 25%, ${dark} 25%, ${dark} 50%, ${normal} 50%, ${normal} 75%, ${dark} 75%, ${dark} 100%)`,
-            backgroundSize: `28.28px 28.28px`,
-        }
-    }));
+    const utilities = _.map(stripes, ([normal, opacity], name) => {
+        let darker = normal + percentToHex(opacity);
+
+        return ({
+            [`.${e(`gradient-stripes-${name}`)}`]: {
+                backgroundImage: `linear-gradient(135deg, ${normal} 25%, ${darker} 25%, ${darker} 50%, ${normal} 50%, ${normal} 75%, ${darker} 75%, ${darker} 100%)`,
+                backgroundSize: `28.28px 28.28px`,
+            }
+        })
+    });
 
     addUtilities(utilities, stripesVariants);
 });

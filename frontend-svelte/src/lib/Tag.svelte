@@ -34,11 +34,11 @@
 
 	class:tag-minor={TagKindUtil.isMinor(kind)}
 
-	class:gradient-stripes-yellow-400-500={kind === TagKind.PairingMinor}
-	class:hover:gradient-stripes-yellow-500-600={kind === TagKind.PairingMinor}
+	class:gradient-stripes-yellow-400={kind === TagKind.PairingMinor}
+	class:hover:gradient-stripes-yellow-500={kind === TagKind.PairingMinor}
 
-	class:gradient-stripes-blue-400-500={kind === TagKind.CharacterMinor}
-	class:hover:gradient-stripes-blue-500-600={kind === TagKind.CharacterMinor}
+	class:gradient-stripes-blue-400={kind === TagKind.CharacterMinor}
+	class:hover:gradient-stripes-blue-500={kind === TagKind.CharacterMinor}
 >
 	<slot></slot>
 </a>
