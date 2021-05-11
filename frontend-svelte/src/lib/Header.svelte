@@ -33,7 +33,7 @@
 <nav>
 	<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 		<div class="relative flex items-center justify-between h-10">
-			<div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+			<div class="absolute inset-y-0 left-0 flex items-center md:hidden">
 				<!-- Mobile menu button-->
 				<button
 					type="button"
@@ -75,11 +75,11 @@
 					</svg>
 				</button>
 			</div>
-			<div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+			<div class="flex-1 flex items-center justify-center md:items-stretch md:justify-start">
 				<div class="flex-shrink-0 flex items-center">
 					<a sapper:prefetch href="/" class="block text-white hover:text-blue-400 transition-colors font-bold tracking-widest py-2 rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">stry</a>
 				</div>
-				<div class="hidden sm:block sm:ml-3">
+				<div class="hidden md:block md:ml-3">
 					<div class="flex">
 						{#each entries as entry}
 							<NavbarEntry selected={(entry.segment != undefined && entry.segment == segment)} url={entry.url} name={entry.name} mobile={false} />
@@ -87,19 +87,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="flex-inital flex items-center justify-center sm:items-stretch sm:justify-start">
-				<div class="hidden sm:block sm:ml-3">
+			<div class="flex-inital flex items-center justify-center md:items-stretch md:justify-start">
+				<div class="hidden md:block md:ml-3">
 					<input type="text" class=" text-white bg-gray-700 px-2 py-1 rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400" placeholder="search">
 				</div>
 			</div>
-			<div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-3 sm:pr-0">
+			<div class="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-3 md:pr-0">
 				<NavbarUser />
 			</div>
 		</div>
 	</div>
 
 	<!-- Mobile menu, show/hide based on menu state. -->
-	<div class="sm:hidden" class:hidden={!open} id="mobile-menu">
+	<div class:hidden={!open} id="mobile-menu">
 		<div class="px-2 pt-2 pb-3 space-y-1">
 			<div class="flex flex-col">
 				{#each entries as entry}

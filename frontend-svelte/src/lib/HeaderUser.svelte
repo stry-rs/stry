@@ -25,7 +25,7 @@
 
 	{#if open}
 		<div
-			class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+			class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
 			role="menu"
 			aria-orientation="vertical"
 			aria-labelledby="user-menu"
@@ -33,19 +33,19 @@
 		>
 			<a
 				href="/"
-				class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-				role="menuitem">Your Profile</a
-			>
+				class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
+				role="menuitem"
+			>Your Profile</a>
 			<a
 				href="/"
-				class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-				role="menuitem">Settings</a
-			>
+				class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
+				role="menuitem"
+			>Settings</a>
 			<a
 				href="/"
-				class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-				role="menuitem">Sign out</a
-			>
+				class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
+				role="menuitem"
+			>Sign out</a>
 		</div>
 	{/if}
 </div>
