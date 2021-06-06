@@ -11,10 +11,10 @@ members = [
     "syndrome",
 
     # stry crates
-    "backend-postgres",
-    "common",
-    "service-all",
-    "service-graphql",
+    "stry-backend-postgres",
+    "stry-common",
+    "stry-service-all",
+    "stry-service-graphql",
 ]
 
 [patch.crates-io]

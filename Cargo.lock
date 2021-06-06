@@ -1607,31 +1607,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "service-all"
-version = "0.1.0"
-dependencies = [
- "hyper",
- "service-graphql",
- "syndrome",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "service-graphql"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-graphql",
- "clockwork",
- "httprouter",
- "hyper",
- "syndrome",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "sha-1"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1900,6 +1875,31 @@ dependencies = [
  "markup5ever_arcdom",
  "markup5ever_rcdom",
  "thiserror",
+]
+
+[[package]]
+name = "stry-service-all"
+version = "0.1.0"
+dependencies = [
+ "hyper",
+ "stry-service-graphql",
+ "syndrome",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "stry-service-graphql"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-graphql",
+ "clockwork",
+ "httprouter",
+ "hyper",
+ "syndrome",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

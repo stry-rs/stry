@@ -1,5 +1,5 @@
 [package]
-name = "service-all"
+name = "stry-service-all"
 version = "0.1.0"
 authors = [ "Txuritan <txuritan@protonmail.com>" ]
 edition = "2018"
@@ -9,7 +9,7 @@ workspace = ".."
 [dependencies]
 syndrome = { path = "../syndrome" }
 
-service-graphql = { path = "../service-graphql" }
+stry-service-graphql = { path = "../stry-service-graphql" }
 
 hyper = { version = "0.14", features = [ "server" ] }
 tokio = { version = "1.0", features = [ "macros", "rt-multi-thread" ] }
