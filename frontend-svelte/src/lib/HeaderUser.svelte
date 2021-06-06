@@ -6,7 +6,7 @@
 	let open = false;
 </script>
 
-<div class="ml-3 relative" use:clickOutside={() => { if (open) { open = false; } }}>
+<div class="relative" use:clickOutside={() => { if (open) { open = false; } }}>
 	<div>
 		<button
 			type="button"

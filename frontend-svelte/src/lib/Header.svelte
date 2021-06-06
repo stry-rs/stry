@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { slide } from "svelte/transition";
+
 	import NavbarEntry from "$lib/HeaderEntry.svelte";
 	import NavbarUser from "$lib/HeaderUser.svelte";
 
@@ -37,7 +39,7 @@
 				<!-- Mobile menu button-->
 				<button
 					type="button"
-					class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+					class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 transition-colors duration-75 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
 					aria-controls="mobile-menu"
 					aria-expanded="false"
 					on:click={_ => open = !open}
@@ -77,7 +79,7 @@
 			</div>
 			<div class="flex-1 flex items-center justify-center md:items-stretch md:justify-start">
 				<div class="flex-shrink-0 flex items-center">
-					<a sapper:prefetch href="/" class="block text-white hover:text-blue-400 transition-colors font-bold tracking-widest py-2 rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">stry</a>
+					<a sveltekit:prefetch href="/" class="text-white hover:text-blue-400 transition-colors duration-75 font-bold tracking-widest my-2 rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">stry</a>
 				</div>
 				<div class="hidden md:block md:ml-3">
 					<div class="flex">
@@ -99,15 +101,17 @@
 	</div>
 
 	<!-- Mobile menu, show/hide based on menu state. -->
-	<div class:hidden={!open} id="mobile-menu">
-		<div class="px-2 pt-2 pb-3 space-y-1">
-			<div class="flex flex-col">
-				{#each entries as entry}
-					<NavbarEntry selected={(entry.segment != undefined && entry.segment == segment)} url={entry.url} name={entry.name} mobile={true} />
-				{/each}
+	{#if open}
+		<div transition:slide="{{ duration: 150 }}">
+			<div class="px-2 pt-2 pb-3 space-y-1">
+				<div class="flex flex-col">
+					{#each entries as entry}
+						<NavbarEntry selected={(entry.segment != undefined && entry.segment == segment)} url={entry.url} name={entry.name} mobile={true} />
+					{/each}
 
-				<input type="text" class="text-white bg-gray-700 px-3 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400" placeholder="search">
+					<input type="text" class="text-white bg-gray-700 px-3 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400" placeholder="search">
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 </nav>

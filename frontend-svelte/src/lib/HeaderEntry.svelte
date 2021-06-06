@@ -5,16 +5,16 @@
 	export let name: string;
 </script>
 
-{#if mobile}
-	{#if selected}
-		<a sapper:prefetch href={url} class="text-opacity-90 text-blue-400 block mx-3 my-2 text-base font-medium  rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">{name}</a>
-	{:else}
-		<a sapper:prefetch href={url} class="text-opacity-90 text-white hover:text-blue-400 transition-colors duration-75 block mx-3 my-2 text-base font-medium  rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">{name}</a>
-	{/if}
-{:else}
-	{#if selected}
-		<a sapper:prefetch href={url} class="text-opacity-90 text-blue-400 mx-3 my-2 text-base font-medium  rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">{name}</a>
-	{:else}
-		<a sapper:prefetch href={url} class="text-opacity-90 text-white hover:text-blue-400 transition-colors duration-75 mx-3 my-2 text-base font-medium  rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400">{name}</a>
-	{/if}
-{/if}
+<a
+	sveltekit:prefetch
+	href={url}
+	class="
+		{mobile ? "block" : ""}
+		text-opacity-90
+		transition-colors duration-75
+		mx-3 my-2
+		rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-400
+		{selected ? "text-blue-400" : "text-white hover:text-blue-400"}
+		text-base font-medium
+	"
+>{name}</a>
