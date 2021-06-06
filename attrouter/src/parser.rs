@@ -133,9 +133,9 @@ fn parse_url<'u>(token: &'u LitStr, url: &'u str) -> UrlParams<'u> {
     UrlParams { token, items }
 }
 
-fn parse_params<'p>(
-    params: &'p Punctuated<FnArg, syn::Token![,]>,
-) -> Result<Vec<FnParam<'p>>, TokenStream> {
+fn parse_params(
+    params: &Punctuated<FnArg, syn::Token![,]>,
+) -> Result<Vec<FnParam<'_>>, TokenStream> {
     let mut mapped = Vec::with_capacity(params.len());
 
     for param in params {

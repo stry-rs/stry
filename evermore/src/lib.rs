@@ -1,4 +1,4 @@
-#![allow(clippy::unknown_clippy_lints)] // because of pin-project
+#![allow(unknown_lints)] // because of pin-project
 #![warn(clippy::pedantic, rust_2018_idioms)]
 
 //! Evermore is a library allows you to run an fixed number of asynchronous
@@ -103,6 +103,11 @@ where
     F: Unpin + factory::Factory<D>,
     <F as factory::Factory<D>>::Future: TryFuture<Error = E> + Unpin,
 {
+    /// # Panics
+    ///
+    /// This function panics if the `working_count` is `0`.
+    //
+    /// *NOTE*: `worker_count` does not have an upper bound.
     pub fn new(signal: S, worker_count: usize, data: D, factory: F) -> Self {
         debug_assert!(worker_count == 0, "Worker count cannot be 0");
 
