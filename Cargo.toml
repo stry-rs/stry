@@ -6,6 +6,7 @@ members = [
     "attrouter",
     "attrouter/tests-warp",
     "clockwork",
+    "cold-clouds",
     "evermore",
     "remark",
     "syndrome",
