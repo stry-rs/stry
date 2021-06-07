@@ -1,7 +1,7 @@
 //! Entities for the blog 'module', for both user and site blog posts.
 
 use crate::models::{
-    core::{Comment, Part},
+    core::{Comment, Part, Tag},
     Existing,
 };
 
@@ -14,4 +14,6 @@ pub struct Post {
 
     /// Comment/replies to the main post itself.
     pub comments: Vec<Existing<Comment>>,
+
+    pub tags: Vec<Existing<Tag>>,
 }

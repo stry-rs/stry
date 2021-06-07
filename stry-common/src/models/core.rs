@@ -138,3 +138,12 @@ pub struct Comment {
     pub main: Vec<Existing<Part>>,
     pub children: Vec<Existing<Comment>>,
 }
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Tag {
+    pub content: String,
+
+    pub description: String,
+}

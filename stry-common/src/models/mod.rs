@@ -11,7 +11,7 @@ use {
     crate::utils::nanoid,
     arrayvec::ArrayString,
     chrono::{DateTime, Utc},
-    std::ops::Deref,
+    std::ops::{Deref, DerefMut},
 };
 
 crate::newtype! {
@@ -70,5 +70,11 @@ impl<T> Deref for Existing<T> {
 
     fn deref(&self) -> &Self::Target {
         &self.inner
+    }
+}
+
+impl<T> DerefMut for Existing<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
     }
 }

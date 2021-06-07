@@ -2,7 +2,7 @@ use {
     crate::{PostgresBackend, PostgresBackendError},
     stry_common::{
         backend::BackendEntry,
-        models::{story::Tag, Existing, Id, New},
+        models::{core::Tag, Existing, Id, New},
     },
 };
 

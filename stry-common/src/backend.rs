@@ -4,9 +4,9 @@ use {
     crate::{
         models::{
             blog::Post,
-            core::{Comment, Part, User},
-            story::{Chapter, Character, Origin, Pairing, Series, Story, Tag, Warning},
-            wiki::{Category, Page},
+            core::{Comment, Part, Tag, User},
+            story::{Chapter, Character, Origin, Pairing, Series, Story, Warning},
+            wiki::Page,
             Existing, Id, New,
         },
         uri::Uri,
@@ -68,7 +68,6 @@ pub trait Backend<Err>:
     + BackendEntry<Story, Err>
     + BackendEntry<Series, Err>
     // Wiki
-    + BackendEntry<Category, Err>
     + BackendEntry<Page, Err>
 where
     Err: Error,

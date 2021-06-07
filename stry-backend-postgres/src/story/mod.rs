@@ -6,5 +6,4 @@ pub mod origin;
 pub mod pairing;
 pub mod series;
 pub mod story;
-pub mod tag;
 pub mod warning;

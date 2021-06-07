@@ -1,7 +1,7 @@
 //! Site wide and user wiki, allowing for history and notes on anything needed.
 
 use {
-    crate::models::{core::Part, Existing},
+    crate::models::{core::{Part, Tag}, Existing},
     chrono::{DateTime, Utc},
 };
 
@@ -14,7 +14,7 @@ pub struct Page {
 
     pub parts: Vec<Existing<Part>>,
 
-    pub categories: Vec<Existing<Category>>,
+    pub tags: Vec<Existing<Tag>>,
 }
 
 /// A point in history for a page.
@@ -26,17 +26,7 @@ pub struct PageRevision {
 
     pub parts: Vec<Existing<Part>>,
 
-    pub categories: Vec<Existing<Category>>,
+    pub tags: Vec<Existing<Tag>>,
 
     pub modified: DateTime<Utc>,
-}
-
-/// A category that can be used to separate pages into groups.
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Category {
-    pub content: String,
-
-    pub description: String,
 }

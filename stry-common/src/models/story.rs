@@ -3,7 +3,7 @@
 
 use {
     crate::models::{
-        core::{Comment, Part, User},
+        core::{Comment, Part, User, Tag},
         Existing, Id,
     },
     either::Either,
@@ -117,22 +117,14 @@ pub struct Series {
     pub stories: Either<Vec<Existing<Story>>, Vec<Id>>,
 }
 
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Character {
-    pub content: String,
-
-    pub description: String,
+crate::newtype! {
+    #[derive(serde::Deserialize, serde::Serialize)]
+    Character: Tag
 }
 
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Origin {
-    pub content: String,
-
-    pub description: String,
+crate::newtype! {
+    #[derive(serde::Deserialize, serde::Serialize)]
+    Origin: Tag
 }
 
 #[rustfmt::skip]
@@ -155,22 +147,9 @@ pub enum Relationship {
     Romantic,
 }
 
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Tag {
-    pub content: String,
-
-    pub description: String,
-}
-
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Warning {
-    pub content: String,
-
-    pub description: String,
+crate::newtype! {
+    #[derive(serde::Deserialize, serde::Serialize)]
+    Warning: Tag
 }
 
 #[rustfmt::skip]
