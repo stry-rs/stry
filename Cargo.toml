@@ -12,6 +12,7 @@ members = [
     "syndrome",
 
     # stry crates
+    "stry-analytics",
     "stry-backend-postgres",
     "stry-common",
     "stry-service-all",
