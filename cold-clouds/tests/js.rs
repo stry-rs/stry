@@ -11,10 +11,7 @@ pub fn decode(source: &str) -> swc_ecma_ast::Module {
     let cm: Lrc<SourceMap> = Default::default();
     let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
 
-    let fm = cm.new_source_file(
-        FileName::Custom("test.js".into()),
-        source.into(),
-    );
+    let fm = cm.new_source_file(FileName::Custom("test.js".into()), source.into());
 
     let lexer = Lexer::new(
         Syntax::Es(Default::default()),

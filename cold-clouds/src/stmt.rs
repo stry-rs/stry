@@ -1,4 +1,8 @@
-use {swc_ecma_ast as js, std::io::{self, Write}, crate::expr};
+use {
+    crate::expr,
+    std::io::{self, Write},
+    swc_ecma_ast as js,
+};
 
 pub fn convert<W>(writer: &mut W, stmt: &js::Stmt) -> io::Result<()>
 where

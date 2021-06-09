@@ -3,7 +3,7 @@
 
 use {
     crate::models::{
-        core::{Comment, Part, User, Tag},
+        core::{Comment, Part, Tag, User},
         Existing, Id,
     },
     either::Either,

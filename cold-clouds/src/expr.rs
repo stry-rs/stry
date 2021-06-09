@@ -1,4 +1,7 @@
-use {swc_ecma_ast as js, std::io::{self, Write}};
+use {
+    std::io::{self, Write},
+    swc_ecma_ast as js,
+};
 
 pub fn convert<W>(writer: &mut W, expr: &js::Expr) -> io::Result<()>
 where

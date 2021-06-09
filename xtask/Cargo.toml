@@ -7,4 +7,10 @@ edition = "2018"
 workspace = ".."
 
 [dependencies]
-chrono = { version = "0.4", default-features = false, features = ["clock"] }
+anyhow = "1.0"
+chrono = { version = "0.4", default-features = false, features = [ "clock" ] }
+quote = "1.0"
+serde = { version = "1.0", features = [ "derive" ] }
+serde_path_to_error = "0.1"
+serde_yaml = "0.8"
+ureq = "2.1"

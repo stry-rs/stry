@@ -1,7 +1,10 @@
 mod expr;
 mod stmt;
 
-use {swc_ecma_ast as js, std::io::{self, Write}};
+use {
+    std::io::{self, Write},
+    swc_ecma_ast as js,
+};
 
 pub fn convert_module<W>(writer: &mut W, module: &js::Module) -> io::Result<()>
 where

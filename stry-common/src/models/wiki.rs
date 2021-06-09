@@ -1,7 +1,10 @@
 //! Site wide and user wiki, allowing for history and notes on anything needed.
 
 use {
-    crate::models::{core::{Part, Tag}, Existing},
+    crate::models::{
+        core::{Part, Tag},
+        Existing,
+    },
     chrono::{DateTime, Utc},
 };
 
