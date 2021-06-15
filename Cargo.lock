@@ -2137,6 +2137,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "stry-module-blog"
+version = "0.1.0"
+
+[[package]]
+name = "stry-module-core"
+version = "0.1.0"
+
+[[package]]
+name = "stry-module-forum"
+version = "0.1.0"
+
+[[package]]
+name = "stry-module-story"
+version = "0.1.0"
+
+[[package]]
 name = "stry-remark"
 version = "0.1.0"
 dependencies = [

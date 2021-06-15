@@ -15,6 +15,10 @@ members = [
     "stry-analytics",
     "stry-backend-postgres",
     "stry-common",
+    "stry-module-blog",
+    "stry-module-core",
+    "stry-module-forum",
+    "stry-module-story",
     "stry-service-all",
     "stry-service-graphql",
 ]
