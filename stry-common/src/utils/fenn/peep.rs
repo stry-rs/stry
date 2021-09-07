@@ -75,7 +75,7 @@ impl<T: Sized> Peep for T {}
 
 /// [`Peep`](./trait.Peep.html), but specifically for
 /// [`Option`](https://doc.rust-lang.org/std/option/enum.Option.html)'s.
-pub trait PeekOption<T: Sized>: Sized {
+pub trait PeepOption<T: Sized>: Sized {
     fn peep_some<F, R>(self, run: F) -> Self
     where
         F: FnOnce(&T) -> R,
@@ -131,7 +131,7 @@ pub trait PeekOption<T: Sized>: Sized {
     }
 }
 
-impl<T: Sized> PeekOption<T> for Option<T> {
+impl<T: Sized> PeepOption<T> for Option<T> {
     fn peep_some<F, R>(self, run: F) -> Self
     where
         F: FnOnce(&T) -> R,

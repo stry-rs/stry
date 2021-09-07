@@ -28,11 +28,11 @@ macro_rules! newtype {
             }
         }
 
-        impl<T> ::core::convert::From<T> for $name<T> {
-            fn from(other: T) -> Self {
-                Self(other)
-            }
-        }
+        // impl<T> ::core::convert::From<T> for $name<T> {
+        //     fn from(other: T) -> Self {
+        //         Self(other)
+        //     }
+        // }
 
         //#region[rgba(186,255,201,0.05)] copy/clone
         impl<T> ::core::clone::Clone for $name<T>

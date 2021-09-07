@@ -1,4 +1,3 @@
-#[cfg(feature = "with-nanoid")]
 use {
     crate::models::Id,
     arrayvec::ArrayString,
@@ -16,14 +15,10 @@ use {
 /// [`Id`]: crate::models::Id
 pub const SIZE: usize = 6;
 
-#[cfg(feature = "with-nanoid")]
 const LEN: usize = 54;
-#[cfg(feature = "with-nanoid")]
 const MASK: usize = LEN.next_power_of_two() - 1;
-#[cfg(feature = "with-nanoid")]
 const STEP: usize = 8 * SIZE / 5;
 
-#[cfg(feature = "with-nanoid")]
 static ALPHABET: [char; LEN] = [
     '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
     'm', 'n', 'p', 'q', 'r', 's', 't', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -33,7 +28,6 @@ static ALPHABET: [char; LEN] = [
 /// Returns a new [`Id`] generated using [nanoid](https://github.com/ai/nanoid) with a custom alphabet.
 ///
 /// Customized version of [the Rust version](https://github.com/nikolay-govorov/nanoid).
-#[cfg(feature = "with-nanoid")]
 pub fn nanoid() -> Option<Id> {
     let mut id = ArrayString::<{ SIZE }>::new();
 

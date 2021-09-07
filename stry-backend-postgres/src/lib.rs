@@ -7,13 +7,9 @@ pub mod wiki;
 
 use {
     sqlx::{migrate::Migrator, postgres::PgConnectOptions, Pool, Postgres},
-    std::{
-        error::Error,
-        fmt::{self, Display, Formatter},
-        num::ParseIntError,
-    },
     stry_common::{
         backend::{Backend, BackendFactory},
+        prelude::*,
         uri::Uri,
     },
 };
@@ -24,10 +20,9 @@ pub struct PostgresBackendFactory;
 
 #[async_trait::async_trait]
 impl BackendFactory for PostgresBackendFactory {
-    type Error = PostgresBackendError;
     type Backend = PostgresBackend;
 
-    async fn create(&self, uri: Uri) -> Result<Self::Backend, Self::Error> {
+    async fn create(&self, uri: Uri) -> Result<Self::Backend, Error> {
         let config = {
             let mut config = PgConnectOptions::new();
 
@@ -73,64 +68,10 @@ pub struct PostgresBackend {
 }
 
 #[async_trait::async_trait]
-impl Backend<PostgresBackendError> for PostgresBackend {
-    async fn migrate(&self) -> Result<(), PostgresBackendError> {
+impl Backend for PostgresBackend {
+    async fn migrate(&self) -> Result<(), Error> {
         MIGRATOR.run(&self.pool).await?;
 
         Ok(())
-    }
-}
-
-#[allow(clippy::upper_case_acronyms)]
-#[derive(Debug)]
-pub enum PostgresBackendError {
-    ConfigParse { err: ParseIntError },
-    SQLx { err: sqlx::Error },
-    SQLxMigration { err: sqlx::migrate::MigrateError },
-}
-
-impl Display for PostgresBackendError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            PostgresBackendError::ConfigParse { err } => {
-                write!(f, "postgres uri parameter value parse error: {}", err)?;
-            }
-            PostgresBackendError::SQLx { err } => {
-                write!(f, "sqlx error: {}", err)?;
-            }
-            PostgresBackendError::SQLxMigration { err } => {
-                write!(f, "sqlx migration error: {}", err)?;
-            }
-        }
-
-        Ok(())
-    }
-}
-
-impl Error for PostgresBackendError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            PostgresBackendError::ConfigParse { err } => Some(err),
-            PostgresBackendError::SQLx { err } => Some(err),
-            PostgresBackendError::SQLxMigration { err } => Some(err),
-        }
-    }
-}
-
-impl From<ParseIntError> for PostgresBackendError {
-    fn from(err: ParseIntError) -> Self {
-        Self::ConfigParse { err }
-    }
-}
-
-impl From<sqlx::Error> for PostgresBackendError {
-    fn from(err: sqlx::Error) -> Self {
-        Self::SQLx { err }
-    }
-}
-
-impl From<sqlx::migrate::MigrateError> for PostgresBackendError {
-    fn from(err: sqlx::migrate::MigrateError) -> Self {
-        Self::SQLxMigration { err }
     }
 }

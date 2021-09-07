@@ -1,9 +1,0 @@
-[package]
-name = "tests-warp"
-version = "0.1.0"
-authors = [ "Txuritan <txuritan@protonmail.com>" ]
-edition = "2018"
-
-[dependencies]
-stry-attrouter = { path = "..", default-features = false, features = [ "with-warp" ] }
-warp = { version = "0.3", default-features = false }

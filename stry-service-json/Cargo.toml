@@ -1,0 +1,20 @@
+[package]
+name = "stry-service-json"
+version = "0.1.0"
+edition = "2018"
+
+workspace = ".."
+
+[dependencies]
+syndrome = { path = "../syndrome" }
+
+stry-common = { path = "../stry-common" }
+stry-backend-postgres = { path = "../stry-backend-postgres" }
+
+hyper = "0.14"
+path-tree = "0.2"
+serde = "1.0"
+serde_json = "1.0"
+tokio = { version = "1.0", features = [ "macros", "rt-multi-thread" ] }
+tracing = "0.1"
+tracing-subscriber = "0.2"

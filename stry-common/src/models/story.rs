@@ -1,12 +1,9 @@
 //! Entities for the story 'module', everything tags unique to a story or
 //! series is here.
 
-use {
-    crate::models::{
-        core::{Comment, Part, Tag, User},
-        Existing, Id,
-    },
-    either::Either,
+use crate::models::{
+    core::{Comment, Part, Tag, User},
+    Either, Existing, Id,
 };
 
 #[rustfmt::skip]
@@ -39,6 +36,7 @@ pub struct Story {
     /// # Variant
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
+    #[serde(flatten)]
     pub chapters: Option<Either<Vec<Existing<Chapter>>, Vec<Id>>>,
 
     /// THe sum of all of the chapter's word counts.
@@ -114,6 +112,7 @@ pub struct Series {
     /// # Variant
     ///
     /// Is `Left` when its used directly and is `Left` when its used indirectly (ie in another entity).
+    #[serde(flatten)]
     pub stories: Either<Vec<Existing<Story>>, Vec<Id>>,
 }
 
@@ -139,7 +138,7 @@ pub struct Pairing {
 }
 
 #[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub enum Relationship {
     Family,
@@ -153,7 +152,7 @@ crate::newtype! {
 }
 
 #[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub enum Rating {
     Explicit,
@@ -171,7 +170,7 @@ pub enum Rating {
 ///
 /// To get this time check the `story-auto-abandon` setting key.
 #[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub enum State {
     Completed,

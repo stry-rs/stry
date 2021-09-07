@@ -15,7 +15,7 @@ mod wrap;
 
 pub use self::{
     hash::HashMapExt,
-    peep::{PeekOption, Peep, PeepResult},
+    peep::{Peep, PeepOption, PeepResult},
     string::StringExt,
     vec::VecExt,
     wrap::Wrap,

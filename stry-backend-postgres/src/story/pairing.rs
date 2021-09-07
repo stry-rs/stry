@@ -1,34 +1,31 @@
 use {
-    crate::{PostgresBackend, PostgresBackendError},
+    crate::PostgresBackend,
     stry_common::{
         backend::BackendEntry,
         models::{story::Pairing, Existing, Id, New},
+        prelude::*,
     },
 };
 
 #[async_trait::async_trait]
-impl BackendEntry<Pairing, PostgresBackendError> for PostgresBackend {
-    async fn get(&self, id: Id) -> Result<Existing<Pairing>, PostgresBackendError> {
+impl BackendEntry<Pairing> for PostgresBackend {
+    async fn get(&self, id: Id) -> Result<Existing<Pairing>, Error> {
         todo!()
     }
 
-    async fn all(
-        &self,
-        cursor: Id,
-        limit: usize,
-    ) -> Result<Vec<Existing<Pairing>>, PostgresBackendError> {
+    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Pairing>>, Error> {
         todo!()
     }
 
-    async fn create(&self, data: New<Pairing>) -> Result<Id, PostgresBackendError> {
+    async fn create(&self, data: New<Pairing>) -> Result<Id, Error> {
         todo!()
     }
 
-    async fn update(&self, data: Existing<Pairing>) -> Result<(), PostgresBackendError> {
+    async fn update(&self, data: Existing<Pairing>) -> Result<(), Error> {
         todo!()
     }
 
-    async fn remove(&self, id: Id) -> Result<(), PostgresBackendError> {
+    async fn remove(&self, id: Id) -> Result<(), Error> {
         todo!()
     }
 }

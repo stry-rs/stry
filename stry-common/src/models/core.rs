@@ -107,8 +107,17 @@ pub enum SiteTheme {
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
-pub struct Part {
-    pub kind: PartKind,
+pub enum Part {
+    Heading(PartHeading),
+    Image(PartImage),
+    Text(PartText),
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct PartHeading {
+    pub level: u8,
 
     /// Any comments on or replying to the current part.
     pub comments: Vec<Existing<Comment>>,
@@ -117,10 +126,23 @@ pub struct Part {
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
-pub enum PartKind {
-    Heading { level: u8 },
-    Image { url: String, alt: Option<String>, },
-    Text { content: String, words: i64, },
+pub struct PartImage {
+    pub url: String,
+    pub alt: Option<String>,
+
+    /// Any comments on or replying to the current part.
+    pub comments: Vec<Existing<Comment>>,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct PartText {
+    pub content: String,
+    pub words: i64,
+
+    /// Any comments on or replying to the current part.
+    pub comments: Vec<Existing<Comment>>,
 }
 
 /// A comment made of parts and comments that can be commented on.

@@ -11,13 +11,28 @@ use {
     crate::utils::nanoid,
     arrayvec::ArrayString,
     chrono::{DateTime, Utc},
-    std::ops::{Deref, DerefMut},
+    std::{
+        convert::TryFrom,
+        ops::{Deref, DerefMut},
+    },
 };
 
 crate::newtype! {
     /// The database entry id newtype, is a [`ArrayString`] by default
     #[derive(serde::Deserialize, serde::Serialize)]
     Id: ArrayString<{nanoid::SIZE}>
+}
+
+impl TryFrom<&str> for Id {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        anyhow::ensure!(value.len() != nanoid::SIZE);
+
+        let array = ArrayString::from(value).map_err(|err| err.simplify())?;
+
+        Ok(Id(array))
+    }
 }
 
 /// A wrapper type to indicate that a type has no backend id.
@@ -52,6 +67,7 @@ pub struct Existing<T> {
     /// the `Id` in anyway.
     pub id: Id,
 
+    #[serde(flatten)]
     inner: T,
 
     /// The time this entity was made.
@@ -77,4 +93,12 @@ impl<T> DerefMut for Existing<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.inner
     }
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum Either<L, R> {
+    Left(L),
+    Right(R),
 }

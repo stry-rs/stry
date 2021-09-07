@@ -43,7 +43,7 @@ impl<'s> Anulap<'s> {
     where
         I: Initialize,
     {
-        I::init(&self)
+        I::init(self)
     }
 
     /// Retrieves the specified value returning the first one found.
