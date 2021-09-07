@@ -18,7 +18,7 @@ static MIGRATOR: Migrator = sqlx::migrate!();
 
 pub struct PostgresBackendFactory;
 
-#[async_trait::async_trait]
+#[stry_common::prelude::async_trait]
 impl BackendFactory for PostgresBackendFactory {
     type Backend = PostgresBackend;
 
@@ -67,7 +67,7 @@ pub struct PostgresBackend {
     pool: Pool<Postgres>,
 }
 
-#[async_trait::async_trait]
+#[stry_common::prelude::async_trait]
 impl Backend for PostgresBackend {
     async fn migrate(&self) -> Result<(), Error> {
         MIGRATOR.run(&self.pool).await?;

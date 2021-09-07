@@ -5,13 +5,15 @@ use std::net::SocketAddr;
 use hyper::Server;
 use stry_backend_postgres::PostgresBackendFactory;
 use stry_common::{
-    backend::BackendFactory as _,
+    backend::{boxed::BoxedBackend, BackendFactory as _},
     config::Config,
     layered::{Anulap, EnvSource},
     prelude::*,
     uri::Uri,
 };
-use syndrome::{Method, Syndrome};
+use syndrome::{Syndrome, SyndromeBuilder};
+
+type Data = syndrome::Data<BoxedBackend>;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -30,14 +32,14 @@ async fn main() -> Result<(), Error> {
         "postgres" => {
             let backend = PostgresBackendFactory.create(uri).await?;
 
-            stry_common::backend::boxed::BoxedBackend::new(backend)
+            BoxedBackend::new(backend)
         }
         schema => bail!("`{}` is not a supported database", schema),
     };
 
     let mut router = Syndrome::builder(backend);
 
-    router.insert(Method::GET, "/api/story/:id", story::get);
+    story::ApiStory.configure(&mut router);
 
     let router = router.finish();
 
@@ -45,16 +47,16 @@ async fn main() -> Result<(), Error> {
 
     let server = Server::bind(&addr).serve(router.service());
 
-    tracing::info!("Server listening on {}", addr);
+    info!("Server listening on {}", addr);
 
     if let Err(e) = server.await {
-        tracing::error!("server error: {}", e);
+        error!("server error: {}", e);
     }
 
     Ok(())
 }
 
-pub async fn handle<F, R, T>(f: F) -> Result<syndrome::Response, Error>
+async fn handle<F, R, T>(f: F) -> Result<syndrome::Response, Error>
 where
     F: FnOnce() -> R,
     R: std::future::Future<Output = Result<T, Error>>,
@@ -73,4 +75,6 @@ where
     })
 }
 
-type Data = syndrome::Data<stry_common::backend::boxed::BoxedBackend>;
+trait Api {
+    fn configure(&self, router: &mut SyndromeBuilder<BoxedBackend>);
+}

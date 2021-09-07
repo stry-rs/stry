@@ -1,21 +1,31 @@
 use std::convert::TryFrom;
 
 use stry_common::{
-    backend::BackendEntry,
+    backend::{boxed::BoxedBackend, BackendEntry},
     models::{story::Story, Id},
     prelude::*,
 };
-use syndrome::{Params, Request, Response};
+use syndrome::{Method, Params, Request, Response, SyndromeBuilder};
 
-use crate::{handle, Data};
+use crate::{handle, Api, Data};
 
-pub(crate) async fn get(data: Data, _req: Request, params: Params) -> Result<Response, Error> {
-    handle(move || async move {
-        let id = params.get("id").context("missing `id` from the path")?;
+pub struct ApiStory;
 
-        let id = Id::try_from(id.as_str())?;
+impl ApiStory {
+    async fn get(data: Data, _req: Request, params: Params) -> Result<Response, Error> {
+        handle(move || async move {
+            let id = params.get("id").context("missing `id` from the path")?;
 
-        BackendEntry::<Story>::get(&**data, id).await
-    })
-    .await
+            let id = Id::try_from(id.as_str())?;
+
+            BackendEntry::<Story>::get(&**data, id).await
+        })
+        .await
+    }
+}
+
+impl Api for ApiStory {
+    fn configure(&self, router: &mut SyndromeBuilder<BoxedBackend>) {
+        router.insert(Method::GET, "/api/story/:id", Self::get);
+    }
 }

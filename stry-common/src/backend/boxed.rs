@@ -28,7 +28,7 @@ impl std::ops::Deref for BoxedBackend {
 
 macro_rules! impl_entry {
     ($entry:ty) => {
-        #[async_trait::async_trait]
+        #[crate::prelude::async_trait]
         impl BackendEntry<$entry> for BoxedBackend {
             async fn get(&self, id: Id) -> anyhow::Result<Existing<$entry>> {
                 BackendEntry::<$entry>::get(&*self, id).await

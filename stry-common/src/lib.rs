@@ -14,4 +14,10 @@ pub mod prelude {
         OptionExt as _, Peep as _, PeepOption as _, PeepResult as _, StringExt as _, Wrap as _,
     };
     pub use anyhow::{bail, ensure, Context as _, Error};
+    pub use async_trait::async_trait;
+    pub use chrono::{DateTime, Utc};
+    pub use tracing::{
+        debug, debug_span, error, error_span, info, info_span, instrument, span, trace, trace_span,
+        warn, warn_span, Instrument as _,
+    };
 }

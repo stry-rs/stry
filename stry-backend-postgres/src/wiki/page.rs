@@ -7,7 +7,7 @@ use {
     },
 };
 
-#[async_trait::async_trait]
+#[stry_common::prelude::async_trait]
 impl BackendEntry<Page> for PostgresBackend {
     async fn get(&self, id: Id) -> Result<Existing<Page>, Error> {
         todo!()
