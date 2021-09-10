@@ -13,7 +13,7 @@ impl BackendEntry<Pairing> for PostgresBackend {
         todo!()
     }
 
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Pairing>>, Error> {
+    async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<Pairing>>, Error> {
         todo!()
     }
 

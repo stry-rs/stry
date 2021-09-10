@@ -67,7 +67,6 @@ pub trait Backend:
     // Wiki
     + BackendEntry<Page>
 {
-    // + BackendEntry<PageRevision>{
     /// Run any missing migration on the database backend.
     async fn migrate(&self) -> Result<(), Error>;
 }
@@ -78,7 +77,7 @@ pub trait BackendEntry<Entry> {
     /// Get an entity of type with a specific id.
     async fn get(&self, id: Id) -> Result<Existing<Entry>, Error>;
     /// Get all entities of type using offset cursor
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Entry>>, Error>;
+    async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<Entry>>, Error>;
 
     /// Create a new entity of type.
     async fn create(&self, data: New<Entry>) -> Result<Id, Error>;

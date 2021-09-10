@@ -121,6 +121,22 @@ impl<D> SyndromeBuilder<D> {
             .insert(route, Box::new(handler));
     }
 
+    #[inline]
+    pub fn get<H>(&mut self, route: &'static str, handler: H)
+    where
+        H: Handler<D> + 'static,
+    {
+        self.insert(Method::GET, route, handler);
+    }
+
+    #[inline]
+    pub fn post<H>(&mut self, route: &'static str, handler: H)
+    where
+        H: Handler<D> + 'static,
+    {
+        self.insert(Method::POST, route, handler);
+    }
+
     pub fn finish(self) -> Syndrome<D> {
         Syndrome {
             data: self.data,

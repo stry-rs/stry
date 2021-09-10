@@ -2,7 +2,11 @@ use {
     crate::PostgresBackend,
     stry_common::{
         backend::BackendEntry,
-        models::{story::Story, Existing, Id, New},
+        error::NotFound,
+        models::{
+            story::{Story, StoryRecord},
+            Existing, Id, New,
+        },
         prelude::*,
     },
 };
@@ -10,10 +14,21 @@ use {
 #[stry_common::prelude::async_trait]
 impl BackendEntry<Story> for PostgresBackend {
     async fn get(&self, id: Id) -> Result<Existing<Story>, Error> {
-        todo!()
+        let record = sqlx::query_as!(StoryRecord, r#"SELECT name, summary, rating as "rating: _", state as "state: _", created as "created: _", updated as "updated: _" FROM story_story WHERE id = $1"#, id.as_str())
+            .fetch_optional(&self.pool)
+            .await?;
+
+        match record {
+            Some(record) => {
+                let story = Story::new(record.name, record.summary, record.rating, record.state);
+
+                Ok(Existing::new(id, story, record.created, record.updated))
+            }
+            None => Err(NotFound.into()),
+        }
     }
 
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Story>>, Error> {
+    async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<Story>>, Error> {
         todo!()
     }
 

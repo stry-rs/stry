@@ -5,9 +5,13 @@ use stry_common::{
     models::{story::Story, Id},
     prelude::*,
 };
-use syndrome::{Method, Params, Request, Response, SyndromeBuilder};
+use syndrome::{Params, Request, Response, SyndromeBuilder};
 
-use crate::{handle, Api, Data};
+use crate::{
+    handle,
+    utils::{self, Query},
+    Api, Data,
+};
 
 pub struct ApiStory;
 
@@ -22,10 +26,38 @@ impl ApiStory {
         })
         .await
     }
+
+    async fn all(data: Data, req: Request, _params: Params) -> Result<Response, Error> {
+        handle(move || async move {
+            let query = if let Some(query) = req.uri().query() {
+                serde_urlencoded::from_str::<Query>(query)?
+            } else {
+                Query::default()
+            };
+
+            BackendEntry::<Story>::all(&**data, query.cursor, query.limit).await
+        })
+        .await
+    }
+
+    async fn create(data: Data, req: Request, _params: Params) -> Result<Response, Error> {
+        if let Some(res) = utils::guard::content_type(&req, "application/json").await {
+            return Ok(res);
+        }
+
+        handle(move || async move {
+            // let bytes = hyper::body::to_bytes(req.into_body()).await?;
+
+            Ok("not implemented")
+        })
+        .await
+    }
 }
 
 impl Api for ApiStory {
     fn configure(&self, router: &mut SyndromeBuilder<BoxedBackend>) {
-        router.insert(Method::GET, "/api/story/:id", Self::get);
+        router.get("/story/:id", Self::get);
+        router.get("/story", Self::all);
+        router.post("/story", Self::create);
     }
 }

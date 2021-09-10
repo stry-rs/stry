@@ -1,9 +1,12 @@
 //! Entities for the story 'module', everything tags unique to a story or
 //! series is here.
 
-use crate::models::{
-    core::{Comment, Part, Tag, User},
-    Either, Existing, Id,
+use crate::{
+    models::{
+        core::{Comment, Part, Tag, User},
+        Either, Existing, Id,
+    },
+    prelude::{DateTime, Utc},
 };
 
 #[rustfmt::skip]
@@ -47,6 +50,46 @@ pub struct Story {
     pub words: i32,
 
     pub comments: Vec<Existing<Comment>>,
+}
+
+impl Story {
+    pub fn new(name: String, summary: String, rating: Rating, state: State) -> Self {
+        Self {
+            name,
+            summary,
+
+            rating,
+            state,
+
+            authors: Vec::new(),
+            commissioners: Vec::new(),
+            dedicatees: Vec::new(),
+
+            origins: Vec::new(),
+            warnings: Vec::new(),
+            pairings: Vec::new(),
+            characters: Vec::new(),
+            tags: Vec::new(),
+
+            series: None,
+
+            chapters: None,
+            words: 0,
+
+            comments: Vec::new(),
+        }
+    }
+}
+
+pub struct StoryRecord {
+    pub name: String,
+    pub summary: String,
+
+    pub rating: Rating,
+    pub state: State,
+
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
 }
 
 #[rustfmt::skip]
@@ -154,6 +197,8 @@ crate::newtype! {
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
+#[cfg_attr(feature = "sqlx", derive(sqlx::Type))]
+#[cfg_attr(feature = "sqlx", sqlx(type_name = "story_rating", rename_all = "snake_case"))]
 pub enum Rating {
     Explicit,
     Mature,
@@ -172,6 +217,8 @@ pub enum Rating {
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
+#[cfg_attr(feature = "sqlx", derive(sqlx::Type))]
+#[cfg_attr(feature = "sqlx", sqlx(type_name = "story_state", rename_all = "snake_case"))]
 pub enum State {
     Completed,
     InProgress,

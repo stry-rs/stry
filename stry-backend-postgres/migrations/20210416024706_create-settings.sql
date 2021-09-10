@@ -1,7 +1,7 @@
-CREATE TABLE Settings (
-    Key         TEXT    UNIQUE                  NOT NULL,
-    Value       TEXT                            NOT NULL,
+CREATE TABLE core_settings (
+    key         TEXT    UNIQUE  NOT NULL,
+    value       TEXT            NOT NULL,
 
-    Created     TIMESTAMP WITHOUT TIME ZONE     NOT NULL,
-    Updated     TIMESTAMP WITHOUT TIME ZONE     NOT NULL
+    created     TIMESTAMP WITHOUT TIME ZONE     NOT NULL,
+    updated     TIMESTAMP WITHOUT TIME ZONE     NOT NULL
 );

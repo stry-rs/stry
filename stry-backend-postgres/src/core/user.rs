@@ -13,7 +13,7 @@ impl BackendEntry<User> for PostgresBackend {
         todo!()
     }
 
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<User>>, Error> {
+    async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<User>>, Error> {
         todo!()
     }
 

@@ -1,0 +1,14 @@
+localhost
+
+request_body {
+	max_size 4MB
+}
+
+metrics /metrics
+
+reverse_proxy /api/* 127.0.0.1:3002 {
+	header_up Host {upstream_hostport}
+	header_up X-Forwarded-Host {host}
+}
+
+reverse_proxy 127.0.0.1:3001

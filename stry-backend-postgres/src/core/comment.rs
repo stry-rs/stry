@@ -13,7 +13,7 @@ impl BackendEntry<Comment> for PostgresBackend {
         todo!()
     }
 
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Comment>>, Error> {
+    async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<Comment>>, Error> {
         todo!()
     }
 

@@ -8,9 +8,11 @@ pub mod story;
 pub mod wiki;
 
 use {
-    crate::utils::nanoid,
+    crate::{
+        prelude::{DateTime, Utc},
+        utils::nanoid,
+    },
     arrayvec::ArrayString,
-    chrono::{DateTime, Utc},
     std::{
         convert::TryFrom,
         ops::{Deref, DerefMut},
@@ -21,6 +23,12 @@ crate::newtype! {
     /// The database entry id newtype, is a [`ArrayString`] by default
     #[derive(serde::Deserialize, serde::Serialize)]
     Id: ArrayString<{nanoid::SIZE}>
+}
+
+impl Id {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
 }
 
 impl TryFrom<&str> for Id {
@@ -79,6 +87,17 @@ pub struct Existing<T> {
 
     /// The last time this entity was updated.
     pub updated: DateTime<Utc>,
+}
+
+impl<T> Existing<T> {
+    pub fn new(id: Id, data: T, created: DateTime<Utc>, updated: DateTime<Utc>) -> Self {
+        Self {
+            id,
+            inner: data,
+            created,
+            updated,
+        }
+    }
 }
 
 impl<T> Deref for Existing<T> {

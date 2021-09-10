@@ -26,6 +26,13 @@ impl std::ops::Deref for BoxedBackend {
     }
 }
 
+#[crate::prelude::async_trait]
+impl Backend for BoxedBackend {
+    async fn migrate(&self) -> Result<(), anyhow::Error> {
+        self.inner.migrate().await
+    }
+}
+
 macro_rules! impl_entry {
     ($entry:ty) => {
         #[crate::prelude::async_trait]
@@ -34,7 +41,7 @@ macro_rules! impl_entry {
                 BackendEntry::<$entry>::get(&*self, id).await
             }
 
-            async fn all(&self, cursor: Id, limit: usize) -> anyhow::Result<Vec<Existing<$entry>>> {
+            async fn all(&self, cursor: Option<Id>, limit: usize) -> anyhow::Result<Vec<Existing<$entry>>> {
                 BackendEntry::<$entry>::all(&*self, cursor, limit).await
             }
 

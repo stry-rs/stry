@@ -13,7 +13,7 @@ impl BackendEntry<Warning> for PostgresBackend {
         todo!()
     }
 
-    async fn all(&self, cursor: Id, limit: usize) -> Result<Vec<Existing<Warning>>, Error> {
+    async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<Warning>>, Error> {
         todo!()
     }
 

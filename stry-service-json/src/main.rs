@@ -1,4 +1,5 @@
 mod story;
+mod utils;
 
 use std::net::SocketAddr;
 
@@ -7,11 +8,12 @@ use stry_backend_postgres::PostgresBackendFactory;
 use stry_common::{
     backend::{boxed::BoxedBackend, BackendFactory as _},
     config::Config,
+    error::NotFound,
     layered::{Anulap, EnvSource},
     prelude::*,
     uri::Uri,
 };
-use syndrome::{Syndrome, SyndromeBuilder};
+use syndrome::{StatusCode, Syndrome, SyndromeBuilder};
 
 type Data = syndrome::Data<BoxedBackend>;
 
@@ -37,13 +39,15 @@ async fn main() -> Result<(), Error> {
         schema => bail!("`{}` is not a supported database", schema),
     };
 
+    backend.migrate().await?;
+
     let mut router = Syndrome::builder(backend);
 
     story::ApiStory.configure(&mut router);
 
     let router = router.finish();
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3002));
 
     let server = Server::bind(&addr).serve(router.service());
 
@@ -62,17 +66,27 @@ where
     R: std::future::Future<Output = Result<T, Error>>,
     T: serde::Serialize,
 {
-    Ok({
-        let mut res =
-            syndrome::Response::new(syndrome::Body::from(serde_json::to_vec(&f().await?)?));
+    let (body, status) = match f().await {
+        Ok(entry) => (
+            syndrome::Body::from(serde_json::to_vec(&entry)?),
+            StatusCode::OK,
+        ),
+        Err(err) if err.is::<NotFound>() => (
+            syndrome::Body::from(r#"{"error": "not found"}"#),
+            StatusCode::NOT_FOUND,
+        ),
+        Err(err) => return Err(err),
+    };
 
-        res.headers_mut().insert(
-            syndrome::header::CONTENT_TYPE,
-            syndrome::header::HeaderValue::from_static("application/json; charset=utf-8"),
-        );
+    let mut res = syndrome::Response::new(body);
 
-        res
-    })
+    *res.status_mut() = status;
+    res.headers_mut().insert(
+        syndrome::header::CONTENT_TYPE,
+        syndrome::header::HeaderValue::from_static("application/json; charset=utf-8"),
+    );
+
+    Ok(res)
 }
 
 trait Api {
