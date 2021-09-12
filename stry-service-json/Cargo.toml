@@ -1,18 +1,18 @@
 [package]
 name = "stry-service-json"
 version = "0.1.0"
+authors = [ "Txuritan <txuritan@protonmail.com>" ]
 edition = "2018"
 
 workspace = ".."
 
 [dependencies]
-syndrome = { path = "../syndrome" }
-
 stry-common = { path = "../stry-common" }
 stry-backend-postgres = { path = "../stry-backend-postgres" }
 
-hyper = "0.14"
-path-tree = "0.2"
+base64 = "0.13"
+hyper = { version = "0.14", features = [ "server", "http1", "http2", "tcp", "stream" ] }
+rand = "0.8"
 serde = "1.0"
 serde_json = "1.0"
 serde_urlencoded = "0.7"

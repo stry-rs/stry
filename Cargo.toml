@@ -11,5 +11,6 @@ members = [
     "stry-analytics",
     "stry-backend-postgres",
     "stry-common",
+    "stry-macros",
     "stry-service-json",
 ]

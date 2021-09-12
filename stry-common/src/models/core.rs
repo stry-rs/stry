@@ -1,6 +1,9 @@
 //! Base entities that are used internally and by other 'modules'.
 
-use crate::models::{blog::Post, story::Story, Existing};
+use crate::{
+    models::{blog::Post, story::Story, Existing},
+    prelude::{DateTime, Utc},
+};
 
 /// Universal site settings.
 #[rustfmt::skip]
@@ -23,7 +26,7 @@ pub struct Settings {
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct User {
     pub account: SettingsAccount,
-    pub site: SettingsSite,
+    pub site: Option<SettingsSite>,
 
     /// Stores all the stories that the user owns.
     ///
@@ -38,6 +41,31 @@ pub struct User {
     ///
     /// Is `None` when this type is used indirectly (ie in another entity).
     pub posts: Option<Vec<Existing<Post>>>,
+}
+
+impl User {
+    pub fn new_simple(name: String) -> Self {
+        Self {
+            account: SettingsAccount {
+                name,
+                email: None,
+                hash: None,
+                biography: None,
+            },
+            site: None,
+            stories: None,
+            posts: None,
+        }
+    }
+}
+
+pub struct UserRecord {
+    pub id: String,
+
+    pub name: String,
+
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
 }
 
 /// User settings for the user themself, ie name, biography, and security details.

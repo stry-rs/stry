@@ -13,6 +13,8 @@ license = "MIT"
 workspace = ".."
 
 [dependencies]
+stry-macros = { path = "../stry-macros", version = "0.1" }
+
 anyhow = "1.0"
 arrayvec = { version = "0.7", features = [ "serde" ] }
 async-trait = "0.1"

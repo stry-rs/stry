@@ -14,13 +14,18 @@ pub mod prelude {
         iter::IntoIteratorExt as _, HashMapExt as _, IntoOption as _, IntoResult as _,
         OptionExt as _, Peep as _, PeepOption as _, PeepResult as _, StringExt as _, Wrap as _,
     };
+
+    pub use stry_macros::box_async;
+
     pub use anyhow::{bail, ensure, Context as _, Error};
     pub use async_trait::async_trait;
     pub use chrono::{DateTime, Utc};
     pub use serde::{Deserialize, Serialize};
+    pub use std::convert::TryFrom as _;
+
     pub use tracing::{
-        debug, debug_span, error, error_span, info, info_span, instrument, span, trace, trace_span,
-        warn, warn_span, Instrument as _,
+        debug, debug_span, error, error_span, field, info, info_span, instrument, span, trace,
+        trace_span, warn, warn_span, Instrument as _, Span,
     };
 }
 

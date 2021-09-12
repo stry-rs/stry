@@ -1,4 +1,5 @@
 mod ark;
+mod router;
 
 use {
     chrono::Utc,
@@ -17,6 +18,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some("codegen") => match args.next().as_deref() {
             Some("device-detector") => device_detector()?,
             Some("proto") => {}
+            Some("router") => {
+                let data_path = args
+                    .next()
+                    .expect("there must be a <DATA> argument to `xtask codegen router`");
+                let output_path = args
+                    .next()
+                    .expect("there must be a <OUTPUT> argument to `xtask codegen router`");
+
+                let data_contents = std::fs::read_to_string(&data_path)?;
+
+                let mut routes = HashMap::new();
+
+                for line in data_contents.lines() {
+                    let (method, tail) =
+                        line.split_at(line.find(',').expect("line is missing a comma"));
+                    let tail = tail.trim_start_matches(',');
+                    let (path, handler) =
+                        tail.split_at(tail.find(',').expect("line is missing a comma"));
+                    let handler = handler.trim_start_matches(',');
+
+                    routes
+                        .entry(method)
+                        .or_insert_with(Vec::new)
+                        .push((path, handler));
+                }
+
+                router::build(&mut std::fs::File::create(&output_path)?, routes)?;
+            }
             None => {}
             Some(_) => {}
         },

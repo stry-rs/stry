@@ -1518,6 +1518,7 @@ dependencies = [
  "rand 0.8.4",
  "serde",
  "sqlx",
+ "stry-macros",
  "tracing",
  "ulid",
 ]
@@ -1534,17 +1535,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "stry-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "stry-service-json"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "hyper",
- "path-tree",
+ "rand 0.8.4",
  "serde",
  "serde_json",
  "serde_urlencoded",
  "stry-backend-postgres",
  "stry-common",
- "syndrome",
  "tokio",
  "tracing-subscriber",
 ]
