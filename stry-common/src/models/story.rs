@@ -159,14 +159,37 @@ pub struct Series {
     pub stories: Either<Vec<Existing<Story>>, Vec<Id>>,
 }
 
-crate::newtype! {
-    #[derive(serde::Deserialize, serde::Serialize)]
-    Character: Tag
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Origin {
+    pub content: String,
+
+    pub description: String,
+
+    pub level: TagLevel,
 }
 
-crate::newtype! {
-    #[derive(serde::Deserialize, serde::Serialize)]
-    Origin: Tag
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Warning {
+    pub content: String,
+
+    pub description: String,
+
+    pub level: TagLevel,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Character {
+    pub content: String,
+
+    pub description: String,
+
+    pub level: TagLevel,
 }
 
 #[rustfmt::skip]
@@ -178,6 +201,16 @@ pub struct Pairing {
     pub relationship: Relationship,
 
     pub characters: Vec<Existing<Character>>,
+
+    pub level: TagLevel,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum TagLevel {
+    Major,
+    Minor,
 }
 
 #[rustfmt::skip]
@@ -187,11 +220,6 @@ pub enum Relationship {
     Family,
     Friends,
     Romantic,
-}
-
-crate::newtype! {
-    #[derive(serde::Deserialize, serde::Serialize)]
-    Warning: Tag
 }
 
 #[rustfmt::skip]

@@ -2,11 +2,13 @@
 
 pub mod utils;
 
+pub mod loader;
+pub mod models;
+
 pub mod backend;
 pub mod config;
 pub mod error;
 pub mod layered;
-pub mod models;
 pub mod uri;
 
 pub mod prelude {
@@ -27,6 +29,8 @@ pub mod prelude {
         debug, debug_span, error, error_span, field, info, info_span, instrument, span, trace,
         trace_span, warn, warn_span, Instrument as _, Span,
     };
+
+    pub use ultra_batch as dataloader;
 }
 
 pub mod futures {

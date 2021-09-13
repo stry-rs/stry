@@ -229,7 +229,7 @@ impl<D> std::ops::Deref for Data<D> {{
 
     writeln!(w, "pub type Response = ::hyper::Response<::hyper::Body>;")?;
     writeln!(w, "pub type Request = ::hyper::Request<::hyper::Body>;")?;
-    writeln!(w, "pub type Return<'u> = std::boxed::Box<dyn Fn(Data<::stry_common::backend::boxed::BoxedBackend>, Request, Params<'u>) -> ::std::pin::Pin<std::boxed::Box<dyn ::std::future::Future<Output = ::std::result::Result<Response, ::stry_common::prelude::Error>> + Send + 'u>> + Send + Sync + 'u>;")?;
+    writeln!(w, "pub type Return<'u> = std::boxed::Box<dyn Fn(Data<::stry_common::backend::arc::ArcBackend>, Request, Params<'u>) -> ::std::pin::Pin<std::boxed::Box<dyn ::std::future::Future<Output = ::std::result::Result<Response, ::stry_common::prelude::Error>> + Send + 'u>> + Send + Sync + 'u>;")?;
 
     writeln!(
         w,

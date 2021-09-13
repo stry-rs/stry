@@ -15,14 +15,14 @@ use hyper::{
 use rand::{rngs::OsRng, RngCore};
 use stry_backend_postgres::PostgresBackendFactory;
 use stry_common::{
-    backend::{boxed::BoxedBackend, BackendFactory as _},
+    backend::{arc::ArcBackend, BackendFactory as _},
     config::Config,
     layered::{Anulap, EnvSource},
     prelude::*,
     uri::Uri,
 };
 
-type Data = router::Data<BoxedBackend>;
+type Data = router::Data<ArcBackend>;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Error> {
         "postgres" => {
             let backend = PostgresBackendFactory.create(uri).await?;
 
-            BoxedBackend::new(backend)
+            ArcBackend::new(backend)
         }
         schema => bail!("`{}` is not a supported database", schema),
     };

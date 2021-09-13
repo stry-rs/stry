@@ -35,12 +35,20 @@ impl TryFrom<&str> for Id {
     type Error = anyhow::Error;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        anyhow::ensure!(value.len() != nanoid::SIZE);
+        anyhow::ensure!(
+            value.len() == nanoid::SIZE,
+            "value size is `{}`",
+            value.len()
+        );
 
         let array = ArrayString::from(value).map_err(|err| err.simplify())?;
 
         Ok(Id(array))
     }
+}
+
+pub struct IdRecord {
+    pub id: String,
 }
 
 /// A wrapper type to indicate that a type has no backend id.

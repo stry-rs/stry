@@ -1,25 +1,27 @@
+use std::sync::Arc;
+
 use crate::{
     backend::{Backend, BackendEntry},
     models::{blog, core, story, wiki, Existing, Id, New},
 };
 
-pub struct BoxedBackend {
-    inner: Box<dyn Backend + Send + Sync + 'static>,
+pub struct ArcBackend {
+    inner: Arc<dyn Backend + Send + Sync + 'static>,
 }
 
-impl BoxedBackend {
+impl ArcBackend {
     pub fn new<B>(backend: B) -> Self
     where
         B: Backend + Send + Sync + 'static,
     {
         Self {
-            inner: Box::new(backend),
+            inner: Arc::new(backend),
         }
     }
 }
 
-impl std::ops::Deref for BoxedBackend {
-    type Target = Box<dyn Backend + Send + Sync + 'static>;
+impl std::ops::Deref for ArcBackend {
+    type Target = Arc<dyn Backend + Send + Sync + 'static>;
 
     fn deref(&self) -> &Self::Target {
         &self.inner
@@ -27,7 +29,7 @@ impl std::ops::Deref for BoxedBackend {
 }
 
 #[crate::prelude::async_trait]
-impl Backend for BoxedBackend {
+impl Backend for ArcBackend {
     async fn migrate(&self) -> Result<(), anyhow::Error> {
         self.inner.migrate().await
     }
@@ -36,7 +38,7 @@ impl Backend for BoxedBackend {
 macro_rules! impl_entry {
     ($entry:ty) => {
         #[crate::prelude::async_trait]
-        impl BackendEntry<$entry> for BoxedBackend {
+        impl BackendEntry<$entry> for ArcBackend {
             async fn get(&self, id: Id) -> anyhow::Result<Existing<$entry>> {
                 BackendEntry::<$entry>::get(&*self.inner, id).await
             }

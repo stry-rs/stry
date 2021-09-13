@@ -27,3 +27,4 @@ serde = { version = "1.0", features = [ "derive" ] }
 sqlx = { version = "0.5", features = [ "postgres", "chrono" ], optional = true }
 tracing = "0.1"
 ulid = { version = "0.4", features = [ "serde" ] }
+ultra-batch = "0.1"

@@ -1,6 +1,6 @@
 //! Types for the implementation of database backends.
 
-pub mod boxed;
+pub mod arc;
 
 use crate::{
     models::{

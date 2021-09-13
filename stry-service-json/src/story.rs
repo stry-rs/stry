@@ -53,11 +53,3 @@ impl ApiStory {
         .await
     }
 }
-
-// impl Api for ApiStory {
-//     fn configure(&self, router: &mut SyndromeBuilder<BoxedBackend>) {
-//         router.get("/story/:id", Self::get);
-//         router.get("/story", Self::all);
-//         router.post("/story", Self::create);
-//     }
-// }

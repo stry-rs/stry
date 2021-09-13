@@ -43,7 +43,7 @@ pub type Response = ::hyper::Response<::hyper::Body>;
 pub type Request = ::hyper::Request<::hyper::Body>;
 pub type Return<'u> = std::boxed::Box<
     dyn Fn(
-            Data<::stry_common::backend::boxed::BoxedBackend>,
+            Data<::stry_common::backend::arc::ArcBackend>,
             Request,
             Params<'u>,
         ) -> ::std::pin::Pin<

@@ -63,6 +63,7 @@ impl BackendFactory for PostgresBackendFactory {
     }
 }
 
+#[derive(Clone)]
 pub struct PostgresBackend {
     pool: Pool<Postgres>,
 }
