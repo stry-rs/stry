@@ -6,7 +6,7 @@ use crate::{
         core::{Comment, Part, Tag, User},
         Either, Existing, Id,
     },
-    prelude::{DateTime, Utc},
+    prelude::{DateTime, Utc, TryFrom},
 };
 
 #[rustfmt::skip]
@@ -211,6 +211,23 @@ pub struct Pairing {
 pub enum TagLevel {
     Major,
     Minor,
+}
+
+impl TryFrom<&str> for TagLevel {
+    type Error = crate::prelude::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "major" => Ok(TagLevel::Major),
+            "minor" => Ok(TagLevel::Minor),
+            value => crate::prelude::bail!("`{}` is not a valid tag level", value)
+        }
+    }
+}
+
+pub struct IdLevelRecord {
+    pub id: String,
+    pub level: String,
 }
 
 #[rustfmt::skip]
