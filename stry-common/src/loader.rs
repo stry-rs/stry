@@ -6,13 +6,13 @@ macro_rules! impl_loader {
             }
 
             impl<B: crate::backend::Backend + Send + Sync + 'static> $name<B> {
-                pub fn new(backend: B) -> crate::prelude::dataloader::Batcher<$name<B>> {
-                    crate::prelude::dataloader::Batcher::new(Self { backend }).build()
+                pub fn new(backend: B) -> crate::dataloader::Batcher<$name<B>> {
+                    crate::dataloader::Batcher::builder(Self { backend }).build()
                 }
             }
 
             #[crate::prelude::async_trait]
-            impl<B: crate::backend::Backend + Send + Sync + 'static> crate::prelude::dataloader::Fetcher for $name<B> {
+            impl<B: crate::backend::Backend + Send + Sync + 'static> crate::dataloader::Fetcher for $name<B> {
                 type Key = crate::models::Id;
                 type Value = crate::models::Existing<$value>;
                 type Error = crate::prelude::Error;
@@ -20,7 +20,7 @@ macro_rules! impl_loader {
                 async fn fetch(
                     &self,
                     keys: &[Self::Key],
-                    values: &mut crate::prelude::dataloader::Cache<'_, Self::Key, Self::Value>,
+                    values: &mut crate::dataloader::Cache<'_, Self::Key, Self::Value>,
                 ) -> Result<(), Self::Error> {
                     for id in keys {
                         let value = crate::backend::BackendEntry::<$value>::get(&self.backend, *id).await?;

@@ -1,3 +1,0 @@
-get,/story/:id,crate::story::ApiStory::get
-get,/story,crate::story::ApiStory::all
-post,/story,crate::story::ApiStory::create

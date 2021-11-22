@@ -3,6 +3,7 @@ use std::sync::Arc;
 use crate::{
     backend::{Backend, BackendEntry},
     models::{blog, core, story, wiki, Existing, Id, New},
+    prelude::*,
 };
 
 pub struct ArcBackend {
@@ -20,6 +21,14 @@ impl ArcBackend {
     }
 }
 
+impl Clone for ArcBackend {
+    fn clone(&self) -> Self {
+        Self {
+            inner: Arc::clone(&self.inner),
+        }
+    }
+}
+
 impl std::ops::Deref for ArcBackend {
     type Target = Arc<dyn Backend + Send + Sync + 'static>;
 
@@ -30,8 +39,12 @@ impl std::ops::Deref for ArcBackend {
 
 #[crate::prelude::async_trait]
 impl Backend for ArcBackend {
-    async fn migrate(&self) -> Result<(), anyhow::Error> {
+    async fn migrate(&self) -> Result<(), Error> {
         self.inner.migrate().await
+    }
+
+    async fn register(&self, form: core::UserRegisterForm) -> Result<(), Error> {
+        self.inner.register(form).await
     }
 }
 
@@ -39,23 +52,23 @@ macro_rules! impl_entry {
     ($entry:ty) => {
         #[crate::prelude::async_trait]
         impl BackendEntry<$entry> for ArcBackend {
-            async fn get(&self, id: Id) -> anyhow::Result<Existing<$entry>> {
+            async fn get(&self, id: Id) -> Result<Existing<$entry>, Error> {
                 BackendEntry::<$entry>::get(&*self.inner, id).await
             }
 
-            async fn all(&self, cursor: Option<Id>, limit: usize) -> anyhow::Result<Vec<Existing<$entry>>> {
+            async fn all(&self, cursor: Option<Id>, limit: usize) -> Result<Vec<Existing<$entry>>, Error> {
                 BackendEntry::<$entry>::all(&*self.inner, cursor, limit).await
             }
 
-            async fn create(&self, data: New<$entry>) -> anyhow::Result<Id> {
+            async fn create(&self, data: New<$entry>) -> Result<Id, Error> {
                 BackendEntry::<$entry>::create(&*self.inner, data).await
             }
 
-            async fn update(&self, data: Existing<$entry>) -> anyhow::Result<()> {
+            async fn update(&self, data: Existing<$entry>) -> Result<(), Error> {
                 BackendEntry::<$entry>::update(&*self.inner, data).await
             }
 
-            async fn remove(&self, id: Id) -> anyhow::Result<()> {
+            async fn remove(&self, id: Id) -> Result<(), Error> {
                 BackendEntry::<$entry>::remove(&*self.inner, id).await
             }
         }

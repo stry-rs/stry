@@ -1,6 +1,15 @@
 //! Init config information, everything else is handled though the frontend.
 
+use std::sync::Arc;
+
 use crate::layered::{Anulap, Initialize};
+
+/// The default secret key.
+///
+/// Used to check if the server was supplied with a new key.
+pub static DEFAULT_SECRET: &str = "&E)H@McQfTjWnZr4u7w!z%C*F-JaNdRg";
+
+pub type ArcConfig = Arc<Config>;
 
 /// The application init configuration.
 #[derive(Clone, Debug, serde::Deserialize)]
@@ -51,6 +60,15 @@ pub struct Config {
     /// The parser for this is very simple and may not be able to understand
     /// every valid URI.
     pub database: String,
+
+    /// The secret key used for JWT creation and verification.
+    pub secret: String,
+}
+
+impl Config {
+    pub fn into_arc(self) -> Arc<Self> {
+        Arc::new(self)
+    }
 }
 
 impl Initialize for Config {
@@ -79,6 +97,9 @@ impl Initialize for Config {
             database: config
                 .get("database")
                 .unwrap_or_else(|| String::from("postgres://stry:stry@localhost:5432/stry")),
+            secret: config
+                .get("secret")
+                .unwrap_or_else(|| String::from(DEFAULT_SECRET)),
         })
     }
 }
@@ -89,6 +110,7 @@ impl Default for Config {
             ip: [0, 0, 0, 0],
             port: 8901,
             database: String::from("postgres://stry:stry@localhost:5432/stry"),
+            secret: String::from(DEFAULT_SECRET),
         }
     }
 }

@@ -1,5 +1,6 @@
 use stry_common::{
     backend::BackendEntry,
+    dataloader::Batcher,
     error::NotFound,
     futures::utils::TryStreamExt as _,
     loader::{
@@ -10,7 +11,7 @@ use stry_common::{
         story::{Story, StoryRecord, TagLevel},
         Existing, Id, New,
     },
-    prelude::{dataloader::Batcher, *},
+    prelude::*,
 };
 
 use crate::PostgresBackend;

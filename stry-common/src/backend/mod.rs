@@ -5,7 +5,7 @@ pub mod arc;
 use crate::{
     models::{
         blog::Post,
-        core::{Comment, Part, Tag, User},
+        core::{Comment, Part, Tag, User, UserRegisterForm},
         story::{Chapter, Character, Origin, Pairing, Series, Story, Warning},
         wiki::Page,
         Existing, Id, New,
@@ -69,6 +69,8 @@ pub trait Backend:
 {
     /// Run any missing migration on the database backend.
     async fn migrate(&self) -> Result<(), Error>;
+
+    async fn register(&self, form: UserRegisterForm) -> Result<(), Error>;
 }
 
 /// A database entry, or something that can be stored and retrieved from a database.

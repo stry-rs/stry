@@ -10,4 +10,4 @@ workspace = ".."
 anyhow = "1.0"
 futures-util = "0.3"
 hyper = { version = "0.14", features = [ "server", "http1", "http2", "tcp" ] }
-syndrome = { path = "../syndrome" }
+# syndrome = { path = "../syndrome" }

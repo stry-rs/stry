@@ -6,7 +6,7 @@ use crate::{
         core::{Comment, Part, Tag, User},
         Either, Existing, Id,
     },
-    prelude::{DateTime, Utc, TryFrom},
+    prelude::{members, DateTime, Member, TryFrom, Utc},
 };
 
 #[rustfmt::skip]
@@ -78,6 +78,15 @@ impl Story {
 
             comments: Vec::new(),
         }
+    }
+}
+
+impl Member for Story {
+    type F = members::Authors;
+    type T = Vec<Existing<User>>;
+
+    fn get(&self) -> &Self::T {
+        &self.authors
     }
 }
 
@@ -220,7 +229,7 @@ impl TryFrom<&str> for TagLevel {
         match value {
             "major" => Ok(TagLevel::Major),
             "minor" => Ok(TagLevel::Minor),
-            value => crate::prelude::bail!("`{}` is not a valid tag level", value)
+            value => crate::prelude::bail!("`{}` is not a valid tag level", value),
         }
     }
 }

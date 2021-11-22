@@ -9,6 +9,7 @@ use {
     sqlx::{migrate::Migrator, postgres::PgConnectOptions, Pool, Postgres},
     stry_common::{
         backend::{Backend, BackendFactory},
+        models::core::UserRegisterForm,
         prelude::*,
         uri::Uri,
     },
@@ -73,6 +74,10 @@ impl Backend for PostgresBackend {
     async fn migrate(&self) -> Result<(), Error> {
         MIGRATOR.run(&self.pool).await?;
 
+        Ok(())
+    }
+
+    async fn register(&self, form: UserRegisterForm) -> Result<(), Error> {
         Ok(())
     }
 }

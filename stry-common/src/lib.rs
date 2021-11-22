@@ -2,19 +2,24 @@
 
 pub mod utils;
 
+pub mod backend;
+pub mod dataloader;
 pub mod loader;
+pub mod members;
 pub mod models;
 
-pub mod backend;
 pub mod config;
 pub mod error;
 pub mod layered;
 pub mod uri;
 
 pub mod prelude {
-    pub use crate::utils::{
-        iter::IntoIteratorExt, HashMapExt, IntoOption, IntoResult,
-        OptionExt, Peep, PeepOption, PeepResult, StringExt, Wrap,
+    pub use crate::{
+        members,
+        utils::{
+            iter::IntoIteratorExt, HashMapExt, IntoOption, IntoResult, Member, OptionExt, Peep,
+            PeepOption, PeepResult, StringExt, Wrap,
+        },
     };
 
     pub use stry_macros::box_async;
@@ -29,8 +34,6 @@ pub mod prelude {
         debug, debug_span, error, error_span, field, info, info_span, instrument, span, trace,
         trace_span, warn, warn_span, Instrument, Span,
     };
-
-    pub use ultra_batch as dataloader;
 }
 
 pub mod futures {

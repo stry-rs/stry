@@ -47,6 +47,14 @@ impl TryFrom<&str> for Id {
     }
 }
 
+impl TryFrom<String> for Id {
+    type Error = anyhow::Error;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
 pub struct IdRecord {
     pub id: String,
 }

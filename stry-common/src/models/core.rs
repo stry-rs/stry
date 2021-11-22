@@ -68,6 +68,15 @@ pub struct UserRecord {
     pub updated: DateTime<Utc>,
 }
 
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct UserRegisterForm {
+    pub username: String,
+    pub email: String,
+    pub password: String,
+}
+
 /// User settings for the user themself, ie name, biography, and security details.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]

@@ -1,31 +1,43 @@
-mod router;
-mod story;
+mod extractors;
+mod layers;
+mod provider;
+mod v1;
+
+mod error;
 mod utils;
 
 use std::{
     io::{Cursor, Write},
     net::SocketAddr,
-    time::{self, SystemTime},
+    time::{self, Duration, SystemTime},
 };
 
-use hyper::{
-    service::{make_service_fn, service_fn},
-    Server,
-};
-use rand::{rngs::OsRng, RngCore};
 use stry_backend_postgres::PostgresBackendFactory;
 use stry_common::{
     backend::{arc::ArcBackend, BackendFactory as _},
-    config::Config,
+    config::{Config, DEFAULT_SECRET},
+    futures::utils::TryFutureExt as _,
     layered::{Anulap, EnvSource},
     prelude::*,
     uri::Uri,
 };
 
-type Data = router::Data<ArcBackend>;
+use axum::{
+    body::Body,
+    error_handling::HandleErrorLayer,
+    http::{Request, StatusCode},
+    AddExtensionLayer, Router,
+};
+use rand::{rngs::OsRng, RngCore as _};
+use tower::{BoxError, ServiceBuilder};
+use tower_http::trace::TraceLayer;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    if std::env::var_os("RUST_LOG").is_none() {
+        std::env::set_var("RUST_LOG", "stry_service_json=debug")
+    }
+
     tracing_subscriber::fmt().with_thread_ids(true).init();
 
     let anulap = Anulap::new().with(EnvSource::new());
@@ -33,99 +45,61 @@ async fn main() -> Result<(), Error> {
     let config = anulap
         .init::<Config>()
         .context("unable to initialize config")?;
+    let config = config.into_arc();
 
-    let uri: Uri =
-        Uri::parse(&config.database).context("unable to parse database connection uri")?;
+    if config.secret == DEFAULT_SECRET {
+        warn!("DEFAULT SECRET KEY NOT OVERWRITTEN");
+    }
+
+    let uri = Uri::parse(&config.database).context("unable to parse database connection uri")?;
 
     let backend = match uri.scheme.as_str() {
         "postgres" => {
-            let backend = PostgresBackendFactory.create(uri).await?;
-
-            ArcBackend::new(backend)
+            PostgresBackendFactory
+                .create(uri)
+                .map_ok(ArcBackend::new)
+                .await?
         }
         schema => bail!("`{}` is not a supported database", schema),
     };
 
     backend.migrate().await?;
 
-    let data = router::Data::new(backend);
-
-    let make_service = make_service_fn(|_conn| {
-        let data = data.clone();
-
-        async move {
-            let data = data.clone();
-
-            Ok::<_, std::convert::Infallible>(service_fn(move |req: router::Request| {
-                let data = data.clone();
-
-                async move {
-                    let then = Utc::now().time();
-
-                    let span = build_span(&req);
-
-                    debug!(parent: &span, "received request");
-
-                    let method = req.method();
-
-                    let url = req.uri().clone();
-                    let path = url.path();
-
-                    let res = if let Some((params, handler)) = router::find(method, path) {
-                        info!(parent: &span, "processing request");
-
-                        match (handler)(data.clone(), req, params)
-                            .instrument(info_span!(parent: &span, "request handler"))
-                            .await
-                        {
-                            Ok(res) => Some(res),
-                            Err(err) => {
-                                error!(parent: &span, error = ?err, "error handling request");
-
-                                Some(utils::responses::internal_server_error())
-                            }
-                        }
-                    } else {
-                        None
-                    };
-
-                    Ok::<_, std::convert::Infallible>({
-                        let res = res.unwrap_or_else(utils::responses::not_found);
-
-                        let now = Utc::now().time();
-
-                        let time = then.signed_duration_since(now);
-
-                        info!(
-                            parent: &span,
-                            http.status = %res.status(),
-                            time.seconds = time.num_seconds(),
-                            time.milliseconds = time.num_milliseconds(),
-                            "finished request"
-                        );
-
-                        res
-                    })
+    let app = Router::new().nest("/v1", v1::router()).layer(
+        ServiceBuilder::new()
+            .layer(HandleErrorLayer::new(|error: BoxError| {
+                if error.is::<tower::timeout::error::Elapsed>() {
+                    Ok(StatusCode::REQUEST_TIMEOUT)
+                } else {
+                    Err((
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        format!("Unhandled internal error: {}", error),
+                    ))
                 }
             }))
-        }
-    });
+            .load_shed()
+            .concurrency_limit(1024)
+            .timeout(Duration::from_secs(10))
+            .layer(AddExtensionLayer::new(config.clone()))
+            .layer(AddExtensionLayer::new(backend))
+            .layer(TraceLayer::new_for_http().make_span_with(make_span))
+            .into_inner(),
+    );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3002));
 
-    let server = Server::bind(&addr).serve(make_service);
+    info!("listening on {}", addr);
 
-    info!("Server listening on {}", addr);
-
-    if let Err(e) = server.await {
-        error!("server error: {}", e);
-    }
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .with_graceful_shutdown(shutdown_signal())
+        .await?;
 
     Ok(())
 }
 
-fn build_span(req: &router::Request) -> Span {
-    let span = info_span!(
+fn make_span(req: &Request<Body>) -> Span {
+    let span = debug_span!(
         "request",
         method = %req.method(),
         path = %req.uri().path(),
@@ -140,18 +114,18 @@ fn build_span(req: &router::Request) -> Span {
 
     fn set_record(
         span: &Span,
-        headers: &hyper::http::HeaderMap,
+        headers: &axum::http::HeaderMap,
         field: &str,
-        header: hyper::http::header::HeaderName,
+        header: axum::http::header::HeaderName,
     ) {
         if let Some(Ok(referer)) = headers.get(header).map(|value| value.to_str()) {
             span.record(field, &field::display(referer));
         }
     }
 
-    set_record(&span, headers, "accept", hyper::header::ACCEPT);
-    set_record(&span, headers, "referer", hyper::header::REFERER);
-    set_record(&span, headers, "user_agent", hyper::header::USER_AGENT);
+    set_record(&span, headers, "accept", axum::http::header::ACCEPT);
+    set_record(&span, headers, "referer", axum::http::header::REFERER);
+    set_record(&span, headers, "user_agent", axum::http::header::USER_AGENT);
 
     span
 }
@@ -178,4 +152,34 @@ fn random_id() -> String {
     OsRng.fill_bytes(&mut raw[12..byte_length]);
 
     base64::encode_config(&raw, base64::STANDARD)
+}
+
+#[cfg(unix)]
+async fn shutdown_signal() {
+    use std::io;
+    use tokio::signal::unix::SignalKind;
+
+    async fn terminate() -> io::Result<()> {
+        tokio::signal::unix::signal(SignalKind::terminate())?
+            .recv()
+            .await;
+
+        Ok(())
+    }
+
+    tokio::select! {
+        _ = terminate() => {},
+        _ = tokio::signal::ctrl_c() => {},
+    }
+
+    info!("signal received, starting graceful shutdown");
+}
+
+#[cfg(windows)]
+async fn shutdown_signal() {
+    tokio::signal::ctrl_c()
+        .await
+        .expect("failed to install CTRL+C handler");
+
+    info!("signal received, starting graceful shutdown");
 }

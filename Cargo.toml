@@ -5,7 +5,6 @@ members = [
 
     # 'external' crates
     "evermore",
-    "syndrome",
 
     # stry crates
     "stry-analytics",
