@@ -143,7 +143,7 @@ pub trait StringExt {
     fn trim_end_matches(&mut self, rem: &str);
 }
 
-impl StringExt for super::lib::String {
+impl StringExt for crate::lib::String {
     fn trim(&mut self) {
         self.trim_start();
         self.trim_end();
@@ -155,7 +155,7 @@ impl StringExt for super::lib::String {
     }
 
     fn trim_start(&mut self) {
-        while self.starts_with(char::is_whitespace) {
+        while self.starts_with(|c: char| c.is_whitespace()) {
             self.drain(..1);
         }
     }
@@ -167,7 +167,7 @@ impl StringExt for super::lib::String {
     }
 
     fn trim_end(&mut self) {
-        while self.ends_with(char::is_whitespace) {
+        while self.ends_with(|c: char| c.is_whitespace()) {
             self.truncate(self.len().saturating_sub(1));
         }
     }

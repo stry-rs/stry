@@ -1,19 +1,14 @@
-//! Extension traits for [`Iterator`] and [`IntoIterator`].
-//!
-//! [`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html
-//! [`IntoIterator`]: https://doc.rust-lang.org/std/iter/trait.IntoIterator.html
-
-/// Extensions to [`IntoIterator`] that allow for conditionally chaining other
-/// [`IntoIterator`]'s.
-///
-/// [`IntoIterator`]: https://doc.rust-lang.org/std/iter/trait.IntoIterator.html
+/// Extensions to
+/// [`IntoIterator`](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html)
+/// that allow for conditionally chaining other
+/// [`IntoIterator`](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html)'s.
 pub trait IntoIteratorExt: IntoIterator + Sized {
     /// Conditionally chains a given iterator.
     ///
     /// # Example
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -24,7 +19,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// ```
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -45,7 +40,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// # Example
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -57,7 +52,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// ```
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -83,7 +78,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// # Example
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -94,7 +89,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// ```
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -116,7 +111,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// # Example
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -128,7 +123,7 @@ pub trait IntoIteratorExt: IntoIterator + Sized {
     /// ```
     ///
     /// ```
-    /// use fenn::iter::IntoIteratorExt;
+    /// use fenn::IntoIteratorExt;
     ///
     /// let vec1 = vec![1, 2, 3];
     /// let vec2 = vec![4, 5, 6];
@@ -189,11 +184,10 @@ where
 
 /// An iterator that conditionally chains together other iterators.
 ///
-/// This `enum` is created by the [`IteratorExt::chain_if`] and
-/// [`IteratorExt::chain_if_with`] functions.
-///
-/// [`IteratorExt::chain_if`]: ./trait.IteratorExt.html#method.chain_if
-/// [`IteratorExt::chain_if_with`]: ./trait.IteratorExt.html#method.chain_if_with
+/// This `enum` is created by the
+/// [`IteratorExt::chain_if`](./trait.IteratorExt.html#method.chain_if)
+/// and
+/// [`IteratorExt::chain_if_with`](./trait.IteratorExt.html#method.chain_if_with).
 pub enum ChainIf<O, C>
 where
     O: IntoIterator,
@@ -220,11 +214,10 @@ where
 
 /// An iterator that conditionally chains together other iterators.
 ///
-/// This `enum` is created by the [`IteratorExt::chain_if_else`] and
-/// [`IteratorExt::chain_if_else_with`] functions.
-///
-/// [`IteratorExt::chain_if_else`]: ./trait.IteratorExt.html#method.chain_if_else
-/// [`IteratorExt::chain_if_else_with`]: ./trait.IteratorExt.html#method.chain_if_else_with
+/// This `enum` is created by the
+/// [`IteratorExt::chain_if_else`](./trait.IteratorExt.html#method.chain_if_else)
+/// and
+/// [`IteratorExt::chain_if_else_with`](./trait.IteratorExt.html#method.chain_if_else_with).
 pub enum ChainIfElse<O, I, E>
 where
     O: IntoIterator,

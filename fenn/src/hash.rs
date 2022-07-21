@@ -268,7 +268,7 @@ pub trait HashMapExt<K, V, S> {
         S: BuildHasher;
 }
 
-impl<K, V, S> HashMapExt<K, V, S> for super::lib::HashMap<K, V, S> {
+impl<K, V, S> HashMapExt<K, V, S> for crate::lib::HashMap<K, V, S> {
     fn cleared(mut self) -> Self {
         self.clear();
 

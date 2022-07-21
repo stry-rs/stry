@@ -1,52 +1,119 @@
-//! This module contains part of my general util library `fenn`, and is used as a 'testing' environment.
+#![cfg_attr(not(feature = "std"), no_std)]
 
-#![deny(unsafe_code)]
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+extern crate alloc;
 
+#[macro_use]
 mod capture;
-mod hash;
-pub mod iter;
 mod newtype;
 mod peep;
-pub mod slice;
-mod string;
-mod vec;
-pub mod vec_map;
 mod wrap;
 
-pub use self::{
-    hash::HashMapExt,
+pub mod iter;
+pub mod slice;
+
+pub use crate::{
+    iter::{ChainIf, ChainIfElse, IntoIteratorExt},
     peep::{Peep, PeepOption, PeepResult},
-    string::StringExt,
-    vec::VecExt,
     wrap::Wrap,
 };
 
-/// A [`try!`] like macro for `Result<Option<_>, _>`s.
+#[cfg(any(feature = "std", feature = "hashbrown"))]
+#[cfg_attr(any(feature = "std", feature = "hashbrown"), macro_use)]
+mod hash;
+#[cfg(feature = "std")]
+mod io;
+#[cfg(feature = "alloc")]
+mod string;
+#[cfg(feature = "alloc")]
+mod vec;
+#[cfg(feature = "alloc")]
+pub mod vec_map;
+
+#[cfg(any(feature = "std", feature = "hashbrown"))]
+pub use crate::hash::HashMapExt;
+#[cfg(feature = "std")]
+pub use crate::io::{Endian, ReadExt, WriteExt};
+#[cfg(feature = "alloc")]
+pub use crate::string::StringExt;
+#[cfg(feature = "alloc")]
+pub use crate::vec::VecExt;
+#[cfg(feature = "alloc")]
+#[cfg_attr(feature = "alloc", doc(inline))]
+pub use crate::vec_map::VecMap;
+
+/// A macro used to create a new [`Arc`](https://doc.rust-lang.org/std/sync/struct.Arc.html).
 ///
-/// [`try!`]: https://doc.rust-lang.org/std/macro.try.html
-#[macro_export]
-macro_rules! try_res_opt {
-    ($inner:expr) => {
-        match $inner {
-            ::core::result::Result::Ok(::core::option::Option::Some(value)) => {
-                ::core::result::Result::Ok(value)
-            }
-            ::core::result::Result::Ok(::core::option::Option::None) => {
-                return ::core::result::Result::Ok(::core::option::Option::None)
-            }
-            ::core::result::Result::Err(err) => return ::core::result::Result::Err(err),
-        }
+/// By itself it isn't all that useful, but it makes use when creating tuples
+/// of [`Arc`](https://doc.rust-lang.org/std/sync/struct.Arc.html)s.
+///
+/// # Examples
+///
+/// ```
+/// use std::sync::Arc;
+///
+/// assert_eq!(Arc::new(1), fenn::arc!(1));
+/// ```
+///
+/// ```
+/// use std::sync::Arc;
+///
+/// assert_eq!((Arc::new(1), Arc::new(2)), fenn::arc!(1, 2));
+/// ```
+#[cfg(feature = "alloc")]
+#[cfg_attr(feature = "alloc", macro_export)]
+macro_rules! arc {
+    ( $item:expr ) => {
+        $crate::lib::Arc::new($item)
     };
-    ($inner:expr,) => {
-        $crate::try_res_opt!($inner)
+    ( $item:expr, ) => {
+        $crate::arc!($item)
+    };
+    ( $( $item:expr ),+ ) => {
+        ( $( $crate::arc!($item) ),+)
+    };
+}
+
+/// A macro used to create a new [`Box`](https://doc.rust-lang.org/std/boxed/struct.Arc.html).
+///
+/// By itself it isn't all that useful, but it makes use when creating tuples
+/// of [`Box`](https://doc.rust-lang.org/std/boxed/struct.Box.html)s.
+///
+/// # Examples
+///
+/// ```
+/// use std::boxed::Box;
+///
+/// assert_eq!(Box::new(1), fenn::boxed!(1));
+/// ```
+///
+/// ```
+/// use std::boxed::Box;
+///
+/// assert_eq!((Box::new(1), Box::new(2)), fenn::boxed!(1, 2));
+/// ```
+#[cfg(feature = "alloc")]
+#[cfg_attr(feature = "alloc", macro_export)]
+macro_rules! boxed {
+    ( $item:expr ) => {
+        $crate::lib::Box::new($item)
+    };
+    ( $item:expr, ) => {
+        $crate::boxed!($item)
+    };
+    ( $( $item:expr ),+ ) => {
+        ( $( $crate::boxed!($item) ),+)
     };
 }
 
 /// Various extensions to the bool primitive.
+///
+/// At the moment its only a stable version of [`then_some`](https://doc.rust-lang.org/std/primitive.bool.html#method.then_some) and
+/// [`then`](https://doc.rust-lang.org/std/primitive.bool.html#method.then).
 pub trait BoolExt: Copy {
     /// A stable version of [`then_some`](https://doc.rust-lang.org/std/primitive.bool.html#method.then_some).
     ///
-    /// Returns `Some(t)` if the `bool` is `true`, or `None` otherwise.
+    /// Returns `Some(f())` if the `bool` is `true`, or `None` otherwise.
     ///
     /// # Examples
     ///
@@ -67,54 +134,10 @@ pub trait BoolExt: Copy {
     /// ```rust
     /// use fenn::BoolExt;
     ///
-    /// assert_eq!(false.some_with(|| 0), None);
-    /// assert_eq!(true.some_with(|| 0), Some(0));
+    /// assert_eq!(false.else_some(|| 0), None);
+    /// assert_eq!(true.else_some(|| 0), Some(0));
     /// ```
-    fn some_with<T, F>(self, run: F) -> Option<T>
-    where
-        F: FnOnce() -> T;
-
-    /// Returns `Some(())` if the `bool` is `true`, or `None` otherwise.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use fenn::BoolExt;
-    ///
-    /// assert!(false.as_option().is_none());
-    /// assert!(true.as_option().is_some());
-    /// ```
-    fn as_option(self) -> Option<()>;
-
-    /// Returns `Ok(t)` if the `bool` is `true`, or `Er(())` otherwise.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use fenn::BoolExt;
-    ///
-    /// assert_eq!(false.ok(0), Err(()));
-    /// assert_eq!(true.ok(0), Ok(0));
-    /// ```
-    fn ok<T>(self, t: T) -> Result<T, ()>;
-
-    /// Returns `Ok(run())` if the `bool` is `true`, or `Er(())` otherwise.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use fenn::BoolExt;
-    ///
-    /// assert_eq!(false.ok_with(|| 0), Err(()));
-    /// assert_eq!(true.ok_with(|| 0), Ok(0));
-    /// ```
-
-    fn ok_with<T, F>(self, run: F) -> Result<T, ()>
-    where
-        F: FnOnce() -> T;
-
-    /// Returns `Ok(())` if the `bool` is `true`, or `Err(())` otherwise.
-    fn as_result(self) -> Result<(), ()>;
+    fn else_some<T>(self, f: impl FnOnce() -> T) -> Option<T>;
 }
 
 impl BoolExt for bool {
@@ -126,34 +149,8 @@ impl BoolExt for bool {
         }
     }
 
-    fn some_with<T, F>(self, run: F) -> Option<T>
-    where
-        F: FnOnce() -> T,
-    {
-        self.some(run())
-    }
-
-    fn as_option(self) -> Option<()> {
-        self.some(())
-    }
-
-    fn ok<T>(self, t: T) -> Result<T, ()> {
-        if self {
-            Ok(t)
-        } else {
-            Err(())
-        }
-    }
-
-    fn ok_with<T, F>(self, run: F) -> Result<T, ()>
-    where
-        F: FnOnce() -> T,
-    {
-        self.ok(run())
-    }
-
-    fn as_result(self) -> Result<(), ()> {
-        self.ok(())
+    fn else_some<T>(self, f: impl FnOnce() -> T) -> Option<T> {
+        self.some(f())
     }
 }
 
@@ -272,7 +269,7 @@ impl<T> OptionExt for Option<T> {
     where
         F: FnOnce(&Self::Item) -> bool,
     {
-        if self.as_ref().map(fun).unwrap_or(false) {
+        if self.as_ref().map(fun).unwrap_or_else(|| false) {
             self.take()
         } else {
             None
@@ -282,10 +279,33 @@ impl<T> OptionExt for Option<T> {
 
 #[doc(hidden)]
 pub mod lib {
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    pub use alloc::boxed::Box;
+    #[cfg(feature = "std")]
     pub use std::boxed::Box;
+
+    #[cfg(all(feature = "hashbrown", not(feature = "std")))]
+    pub use hashbrown::HashMap;
+    #[cfg(feature = "std")]
     pub use std::collections::HashMap;
+
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    pub use alloc::fmt;
+    #[cfg(feature = "std")]
     pub use std::fmt;
+
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    pub use alloc::string::String;
+    #[cfg(feature = "std")]
     pub use std::string::String;
+
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    pub use alloc::sync::Arc;
+    #[cfg(feature = "std")]
     pub use std::sync::Arc;
+
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    pub use alloc::vec;
+    #[cfg(feature = "std")]
     pub use std::vec;
 }

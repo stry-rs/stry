@@ -1,0 +1,26 @@
+[package]
+name = "fenn"
+version = "0.1.0"
+authors = [ "Txuritan <txuritan@protonmail.com>" ]
+license = "MIT"
+edition = "2018"
+
+keywords = [ "no_std" ]
+categories = [ "no-std" ]
+
+workspace = ".."
+
+[features]
+default = [ "std" ]
+std = [ "alloc" ]
+alloc = [ ]
+
+[dependencies]
+hashbrown = { version = "0.8", default-features = false, optional = true }
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "string"
+harness = false

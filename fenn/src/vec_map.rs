@@ -1,9 +1,5 @@
-//! A [`Vec`] backed map implementation.
-//!
-//! [`Vec`]: https://doc.rust-lang.org/std/vec/struct.Vec.html
-
 use {
-    super::lib::{
+    crate::lib::{
         fmt,
         vec::{Drain as VecDrain, IntoIter as VecIntoIter},
     },
@@ -19,86 +15,16 @@ use {
     },
 };
 
-/// Create a [`VecMap`](../vec_map/struct.VecMap.html) from a list of key-value pairs.
-///
-/// While based off of [maplit](https://github.com/bluss/maplit), this is an
-/// extended version with the ability to enable a `strict` mode.
-///
-/// # Examples
-///
-/// ```
-/// let map = fenn::vecmap! {
-///     "a" => 1,
-///     "b" => 2,
-/// };
-///
-/// assert_eq!(map["a"], 1);
-/// assert_eq!(map["b"], 2);
-/// assert_eq!(map.get("c"), None);
-/// ```
-///
-/// When `strict` mode is active, a duplicate key will cause a panic.
-///
-/// ```should_panic
-/// let map = fenn::vecmap! {
-///     strict,
-///     data = {
-///         "a" => 1,
-///         "a" => 2, // panics
-///     }
-/// };
-/// ```
-#[macro_export]
-macro_rules! vecmap {
-    (@single $($x:tt)*) => (());
-    (@count $($rest:expr),*) => (<[()]>::len(&[ $($crate::vecmap!(@single $rest)),* ]));
-
-    ( strict, data = { $( $key:expr => $value:expr, )+ } $( , )? ) => {{
-        $crate::vecmap!(strict, data = { $( $key => $value ),+ })
-    }};
-    ( strict, data = { $( $key:expr => $value:expr ),* } $( , )? ) => {{
-        use $crate::{vec_map::VecMapExt, Peep};
-        let _cap = $crate::vecmap!(@count $($key),*);
-        $crate::vec_map::VecMap::with_capacity(_cap)
-        $(
-            .peep(|map| assert!(map.get(&$key).is_some()) )
-            .inserted($key, $value)
-        )*
-    }};
-
-    ( $( $key:expr => $value:expr, )+ ) => {{
-        $crate::vecmap!( $( $key => $value ),+ )
-    }};
-    ( $( $key:expr => $value:expr ),* ) => {{
-        use $crate::vec_map::VecMapExt;
-        let _cap = $crate::vecmap!(@count $($key),*);
-        $crate::vec_map::VecMap::with_capacity(_cap)
-        $(
-            .inserted($key, $value)
-        )*
-    }};
-
-    () => {
-        $crate::vec_map::VecMap::new()
-    };
-}
-
-/// A [`Vec`] backed map implementation.
-///
-/// [`Vec`]: https://doc.rust-lang.org/std/vec/struct.Vec.html
-// TODO: Better docs for this
 pub struct VecMap<K, V> {
     keys: Vec<K>,
     values: Vec<V>,
 }
 
 impl<K, V> VecMap<K, V> {
-    /// Creates an empty [`VecMap`].
+    /// Creates an empty `VecMap`.
     ///
     /// The map is initially created with a capacity of 0, so it will not allocate until it
     /// is first inserted into.
-    ///
-    /// [`VecMap`]: ../vec_map/struct.VecMap.html
     ///
     /// # Examples
     ///
@@ -112,12 +38,10 @@ impl<K, V> VecMap<K, V> {
         VecMap::default()
     }
 
-    /// Creates an empty [`VecMap`] with the specified capacity.
+    /// Creates an empty `VecMap` with the specified capacity.
     ///
     /// The map will be able to hold at least `capacity` elements without
     /// reallocating. If `capacity` is 0, the map will not allocate.
-    ///
-    /// [`VecMap`]: ../vec_map/struct.VecMap.html
     ///
     /// # Examples
     ///
@@ -136,10 +60,8 @@ impl<K, V> VecMap<K, V> {
 
     /// Returns the number of elements the map can hold without reallocating.
     ///
-    /// This number is a lower bound; the [`VecMap`]`<K, V>` might be able to hold
+    /// This number is a lower bound; the `VecMap<K, V>` might be able to hold
     /// more, but is guaranteed to be able to hold at least this many.
-    ///
-    /// [`VecMap`]: ../vec_map/struct.VecMap.html
     ///
     /// # Examples
     ///
@@ -263,7 +185,6 @@ impl<K, V> VecMap<K, V> {
     }
     /// An iterator visiting all key-value pairs in arbitrary order,
     /// with mutable references to the values.
-    ///
     /// The iterator element type is `(&'a K, &'a mut V)`.
     ///
     /// # Examples
@@ -411,10 +332,8 @@ impl<K, V> VecMap<K, V> {
     }
 
     /// Reserves capacity for at least `additional` more elements to be inserted
-    /// in the [`VecMap`]. The collection may reserve more space to avoid
+    /// in the `VecMap`. The collection may reserve more space to avoid
     /// frequent reallocations.
-    ///
-    /// [`VecMap`]: ../vec_map/struct.VecMap.html
     ///
     /// # Panics
     ///
@@ -472,7 +391,7 @@ impl<K, V> VecMap<K, V> {
 
 impl<K, V> VecMap<K, V>
 where
-    K: Eq,
+    K: PartialEq,
 {
     /// Gets the given key's corresponding entry in the map for in-place manipulation.
     ///
@@ -526,11 +445,11 @@ where
     pub fn get<Q: ?Sized>(&self, key: &Q) -> Option<&'_ V>
     where
         K: Borrow<Q>,
-        Q: Eq,
+        Q: PartialEq<K>,
     {
         self.keys
             .iter()
-            .position(|k| key.eq(k.borrow()))
+            .position(|k| key == k)
             .map(|p| &self.values[p])
     }
 
@@ -661,11 +580,11 @@ where
     pub fn get_mut<Q: ?Sized>(&mut self, key: &Q) -> Option<&'_ mut V>
     where
         K: Borrow<Q>,
-        Q: Eq,
+        Q: PartialEq<K>,
     {
         self.keys
             .iter()
-            .position(|k| key.eq(k.borrow()))
+            .position(|k| key == k)
             .map(move |p| &mut self.values[p])
     }
 
@@ -813,7 +732,7 @@ impl<K, V> IntoIterator for VecMap<K, V> {
 
 impl<K, V> FromIterator<(K, V)> for VecMap<K, V>
 where
-    K: Eq,
+    K: PartialEq,
 {
     #[inline]
     fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> Self {
@@ -831,8 +750,8 @@ where
 
 impl<K, Q: ?Sized, V> Index<&Q> for VecMap<K, V>
 where
-    K: Eq + Borrow<Q>,
-    Q: Eq,
+    K: PartialEq + Borrow<Q>,
+    Q: PartialEq<K>,
 {
     type Output = V;
 
@@ -844,8 +763,8 @@ where
 
 impl<K, Q: ?Sized, V> IndexMut<&Q> for VecMap<K, V>
 where
-    K: Eq + Borrow<Q>,
-    Q: Eq,
+    K: PartialEq + Borrow<Q>,
+    Q: PartialEq<K>,
 {
     #[inline]
     fn index_mut(&mut self, key: &Q) -> &mut V {
@@ -913,7 +832,7 @@ where
 {
 }
 
-pub struct Keys<'a, K, V> {
+pub struct Keys<'a, K: 'a, V> {
     iter: SliceIter<'a, K>,
     _phantom: PhantomData<V>,
 }
@@ -956,7 +875,7 @@ impl<'a, K, V> ExactSizeIterator for Keys<'a, K, V> {
     }
 }
 
-pub struct Values<'a, K, V> {
+pub struct Values<'a, K, V: 'a> {
     iter: SliceIter<'a, V>,
     _phantom: PhantomData<K>,
 }
@@ -1012,7 +931,7 @@ impl<'a, K, V> ExactSizeIterator for Values<'a, K, V> {
 
 impl<'a, K, V> FusedIterator for Values<'a, K, V> {}
 
-pub struct ValuesMut<'a, K, V> {
+pub struct ValuesMut<'a, K, V: 'a> {
     iter: SliceIterMut<'a, V>,
     _phantom: PhantomData<K>,
 }
@@ -1058,7 +977,7 @@ impl<'a, K, V> ExactSizeIterator for ValuesMut<'a, K, V> {
 
 impl<'a, K, V> FusedIterator for ValuesMut<'a, K, V> {}
 
-pub struct Iter<'a, K, V> {
+pub struct Iter<'a, K: 'a, V: 'a> {
     iter: Zip<SliceIter<'a, K>, SliceIter<'a, V>>,
 }
 
@@ -1103,7 +1022,7 @@ impl<'a, K, V> ExactSizeIterator for Iter<'a, K, V> {
 
 impl<'a, K, V> FusedIterator for Iter<'a, K, V> {}
 
-pub struct IterMut<'a, K, V> {
+pub struct IterMut<'a, K: 'a, V: 'a> {
     iter: Zip<SliceIter<'a, K>, SliceIterMut<'a, V>>,
 }
 
@@ -1193,7 +1112,7 @@ impl<K, V> ExactSizeIterator for IntoIter<K, V> {
 
 impl<K, V> FusedIterator for IntoIter<K, V> {}
 
-pub struct Drain<'a, K, V> {
+pub struct Drain<'a, K: 'a, V: 'a> {
     iter: Zip<VecDrain<'a, K>, VecDrain<'a, V>>,
 }
 
@@ -1237,7 +1156,7 @@ impl<'a, K, V> ExactSizeIterator for Drain<'a, K, V> {
 
 impl<'a, K, V> FusedIterator for Drain<'a, K, V> {}
 
-pub enum Entry<'a, K, V> {
+pub enum Entry<'a, K: 'a, V: 'a> {
     Occupied(OccupiedEntry<'a, K, V>),
     Vacant(VacantEntry<'a, K, V>),
 }
@@ -1269,7 +1188,7 @@ impl<'a, K: 'a, V: 'a> Entry<'a, K, V> {
 
 impl<'a, K: 'a, V: 'a> Entry<'a, K, V>
 where
-    K: Eq,
+    K: PartialEq,
 {
     #[inline]
     pub fn insert(self, value: V) -> OccupiedEntry<'a, K, V> {
@@ -1301,7 +1220,7 @@ where
 
 impl<'a, K: 'a, V: 'a> Entry<'a, K, V>
 where
-    K: Eq,
+    K: PartialEq,
     V: Default,
 {
     #[inline]
@@ -1327,7 +1246,7 @@ where
     }
 }
 
-pub struct OccupiedEntry<'a, K, V> {
+pub struct OccupiedEntry<'a, K: 'a, V: 'a> {
     index: usize,
     map: &'a mut VecMap<K, V>,
 }
@@ -1395,7 +1314,7 @@ where
     }
 }
 
-pub struct VacantEntry<'a, K, V> {
+pub struct VacantEntry<'a, K: 'a, V: 'a> {
     key: K,
     map: &'a mut VecMap<K, V>,
 }
@@ -1414,7 +1333,7 @@ impl<'a, K: 'a, V: 'a> VacantEntry<'a, K, V> {
 
 impl<'a, K: 'a, V: 'a> VacantEntry<'a, K, V>
 where
-    K: Eq,
+    K: PartialEq,
 {
     #[inline]
     pub fn insert(self, value: V) -> &'a mut V {
@@ -1439,179 +1358,5 @@ where
         f.debug_struct("VacantEntry")
             .field("key", &self.key)
             .finish()
-    }
-}
-
-/// Extension trait that contains functions that allow for chaining of
-/// [`VecMap`](./struct.VecMap.html) functions.
-///
-/// Before:
-///
-/// ```rust
-/// use fenn::vec_map::VecMap;
-///
-/// let mut map = VecMap::new();
-///
-/// map.insert(37, "a");
-/// map.insert(38, "b");
-///
-/// map.remove(&37);
-///
-/// assert_eq!(map.get(&37), None);
-/// assert_eq!(map.get(&38), Some(&"b"));
-/// ```
-///
-/// After:
-///
-/// ```rust
-/// use fenn::vec_map::{VecMapExt, VecMap};
-///
-/// let map = VecMap::new()
-///     .inserted(37, "a")
-///     .inserted(38, "b")
-///     .removed(&37);
-///
-/// assert_eq!(map.get(&37), None);
-/// assert_eq!(map.get(&38), Some(&"b"));
-/// ```
-pub trait VecMapExt<K, V> {
-    /// Clears the map, removing all key-value pairs. Keeps the allocated memory
-    /// for reuse.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use fenn::vec_map::{VecMapExt, VecMap};
-    ///
-    /// let a = VecMap::new()
-    ///     .inserted(1, "a")
-    ///     .cleared();
-    ///
-    /// assert!(a.is_empty());
-    /// ```
-    fn cleared(self) -> Self;
-
-    /// Inserts a key-value pair into the map.
-    ///
-    /// If the map did have this key present, the value is updated. The key is
-    /// not updated, though; this matters for types that can be `==` without
-    /// being identical.
-    ///
-    /// # Warning
-    ///
-    /// Unlike the standard [`VecMap::insert`](./struct.VecMap.html#method.insert)
-    /// that this wraps, this function ignores any returned values.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use fenn::vec_map::{VecMapExt, VecMap};
-    ///
-    /// let map = VecMap::new()
-    ///     .inserted(37, "a");
-    ///
-    /// assert_eq!(map[&37], "a");
-    /// assert_eq!(map.is_empty(), false);
-    /// ```
-    fn inserted(self, k: K, v: V) -> Self
-    where
-        K: Eq;
-
-    /// Removes a key from the map.
-    ///
-    /// The key may be any borrowed form of the map's key type, but
-    /// [`Eq`] on the borrowed form *must* match those for
-    /// the key type.
-    ///
-    /// [`Eq`]: https://doc.rust-lang.org/std/cmp/trait.Eq.html
-    fn removed<Q>(self, k: &Q) -> Self
-    where
-        K: Eq + Borrow<Q>,
-        Q: Eq + PartialEq<K>;
-
-    /// Retains only the elements specified by the predicate.
-    ///
-    /// In other words, remove all pairs `(k, v)` such that `f(&k, &mut v)`
-    /// returns `false`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use fenn::vec_map::{VecMapExt, VecMap};
-    ///
-    /// let map = (0..8).map(|x|(x, x * 10)).collect::<VecMap<i32, i32>>()
-    ///     .retained(|&k, _| k % 2 == 0);
-    ///
-    /// assert_eq!(map.len(), 4);
-    /// ```
-    fn retained<F>(self, f: F) -> Self
-    where
-        K: Eq,
-        F: FnMut(&K, &mut V) -> bool;
-
-    /// Shrinks the capacity of the map as much as possible. It will drop
-    /// down as much as possible while maintaining the internal rules
-    /// and possibly leaving some space in accordance with the resize policy.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use fenn::vec_map::{VecMapExt, VecMap};
-    ///
-    /// let map: VecMap<i32, i32> = VecMap::with_capacity(100)
-    ///     .inserted(1, 2)
-    ///     .inserted(3, 4)
-    ///     .shrinked_to_fit();
-    ///
-    /// assert!(map.capacity() >= 2);
-    /// ```
-    fn shrinked_to_fit(self) -> Self
-    where
-        K: Eq;
-}
-
-impl<K, V> VecMapExt<K, V> for VecMap<K, V> {
-    fn cleared(mut self) -> Self {
-        self.clear();
-
-        self
-    }
-
-    fn inserted(mut self, k: K, v: V) -> Self
-    where
-        K: Eq,
-    {
-        let _ = self.insert(k, v);
-
-        self
-    }
-
-    fn removed<Q>(mut self, k: &Q) -> Self
-    where
-        K: Eq + Borrow<Q>,
-        Q: Eq + PartialEq<K>,
-    {
-        let _ = self.remove(k);
-
-        self
-    }
-
-    fn retained<F>(mut self, f: F) -> Self
-    where
-        K: Eq,
-        F: FnMut(&K, &mut V) -> bool,
-    {
-        self.retain(f);
-
-        self
-    }
-
-    fn shrinked_to_fit(mut self) -> Self
-    where
-        K: Eq,
-    {
-        self.shrink_to_fit();
-
-        self
     }
 }

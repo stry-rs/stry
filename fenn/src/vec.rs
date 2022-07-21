@@ -1,9 +1,6 @@
 use core::cmp::Ordering;
 
-/// Extension trait that contains functions that allow for chaining of
-/// [`Vec`].
-///
-/// [`Vec`]: https://doc.rust-lang.org/std/vec/struct.Vec.html
+/// This trait contains functions that allow for chaining of `Unit` functions.
 ///
 /// Before:
 ///
@@ -371,7 +368,7 @@ pub trait VecExt<T> {
     fn truncated(self, len: usize) -> Self;
 }
 
-impl<T> VecExt<T> for super::lib::vec::Vec<T> {
+impl<T> VecExt<T> for crate::lib::vec::Vec<T> {
     fn appended(mut self, other: &mut Self) -> Self {
         self.append(other);
 

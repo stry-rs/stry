@@ -1,8 +1,6 @@
-mod fenn;
-
 pub mod nanoid;
 
-pub use self::fenn::*;
+pub use fenn::*;
 
 pub trait Member {
     type F;
