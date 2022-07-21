@@ -5,11 +5,23 @@ members = [
 
     # 'external' crates
     "evermore",
+    "fenn",
+    "windswept",
+    "windswept-macros",
 
     # stry crates
-    "stry-analytics",
-    "stry-backend-postgres",
     "stry-common",
     "stry-macros",
+
+    "stry-backend-postgres",
+    "stry-backend-sqlite",
+
     "stry-service-json",
+
+    "stry-frontend-askama",
+
+    "stry-analytics",
 ]
+
+[profile.dev.package.'*']
+opt-level = 2

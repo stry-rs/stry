@@ -16,7 +16,7 @@ std = [ "alloc" ]
 alloc = [ ]
 
 [dependencies]
-hashbrown = { version = "0.8", default-features = false, optional = true }
+hashbrown = { version = "0.12", default-features = false, optional = true }
 
 [dev-dependencies]
 criterion = "0.3"

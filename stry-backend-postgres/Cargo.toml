@@ -15,4 +15,4 @@ workspace = ".."
 [dependencies]
 stry-common = { version = "0.1", path = "../stry-common", features = [ "sqlx" ] }
 
-sqlx = { version = "0.5", features = [ "runtime-tokio-native-tls", "postgres", "chrono" ] }
+sqlx = { version = "=0.6.0", features = [ "runtime-tokio-native-tls", "postgres", "time" ] }

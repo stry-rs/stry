@@ -13,20 +13,26 @@ license = "MIT"
 workspace = ".."
 
 [dependencies]
+fenn = { path = "../fenn", version = "0.1" }
 stry-macros = { path = "../stry-macros", version = "0.1" }
 
-anyhow = "1.0"
-arrayvec = { version = "0.7", features = [ "serde" ] }
-async-trait = "0.1"
-chrono = { version = "0.4", features = [ "serde" ] }
-dashmap = "4.0"
-either = { version = "1.6", features = [ "serde" ] }
-futures-util = "0.3"
-percent-encoding = "2.1"
-rand = "0.8"
-serde = { version = "1.0", features = [ "derive" ] }
-sqlx = { version = "0.5", features = [ "postgres", "chrono" ], optional = true }
-thiserror = "1.0"
-tokio = "1.14"
-tracing = "0.1"
-ulid = { version = "0.5", features = [ "serde" ] }
+anyhow = "=1.0.58"
+arrayvec = { version = "=0.7.2", features = [ "serde" ] }
+async-trait = "=0.1.56"
+base64 = "=0.13.0"
+dashmap = "=5.3.4"
+either = { version = "=1.7.0", features = [ "serde" ] }
+futures-util = "=0.3.21"
+hyper = { version = "=0.14.20", default-features = false }
+percent-encoding = "=2.1.0"
+rand = "=0.8.5"
+serde = { version = "=1.0.139", features = [ "derive" ] }
+sodiumoxide = "=0.2.7"
+sqlx = { version = "=0.6.0", features = [ "postgres", "time" ], optional = true }
+thiserror = "=1.0.31"
+time = { version = "=0.3.11", features = [ "serde" ] }
+tokio = { version = "=1.20.0", default-features = false, features = [ "signal" ] }
+tracing = "=0.1.35"
+twelf = { version = "=0.6.0", default-features = false, features = [ "env", "clap", "json", "yaml", "toml" ] }
+ulid = { version = "=0.6.0", features = [ "serde" ] }
+validator = { version = "=0.15.0", features = [ "derive" ] }

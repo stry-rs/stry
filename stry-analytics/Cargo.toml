@@ -4,10 +4,12 @@ version = "0.1.0"
 authors = ["Txuritan <txuritan@protonmail.com>"]
 edition = "2018"
 
+license = "MIT"
+
 workspace = ".."
 
 [dependencies]
-anyhow = "1.0"
-futures-util = "0.3"
-hyper = { version = "0.14", features = [ "server", "http1", "http2", "tcp" ] }
+anyhow = "=1.0.58"
+futures-util = "=0.3.21"
+hyper = { version = "=0.14.20", features = [ "server", "http1", "http2", "tcp" ] }
 # syndrome = { path = "../syndrome" }
