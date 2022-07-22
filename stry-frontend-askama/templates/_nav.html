@@ -1,0 +1,107 @@
+<nav>
+    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div class="relative flex items-center justify-between h-10">
+            <div class="absolute inset-y-0 left-0 flex items-center md:hidden">
+                <!-- Mobile menu button-->
+                <button
+                    type="button"
+                    class="inline-flex items-center justify-center p-2 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors duration-75 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                    aria-controls="mobile-menu"
+                    aria-expanded="false"
+                    @click="toggle"
+                    id="navbar-button"
+                >
+                    <span class="sr-only">Open main menu</span>
+                    <svg
+                        class="h-6 w-6 block"
+                        x-bind:class="state1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        id="navbar-button__icon--open"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                    <svg
+                        class="h-6 w-6 hidden"
+                        x-bind:class="state2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        id="navbar-button__icon--close"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 flex items-center justify-center md:items-stretch md:justify-start">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="/" class="text-white hover:text-blue-400 transition-colors duration-75 font-bold tracking-widest my-2 rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-blue-400">stry</a>
+                </div>
+                <div class="hidden md:block md:ml-3">
+                    <div class="flex">
+                        {% for segment in segments %}
+                            <a
+                                href="{{ segment.url }}"
+                                class="
+                                    text-opacity-90
+                                    transition-colors duration-75
+                                    mx-3 my-2
+                                    rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-blue-400
+                                    {% if segment.url == selected %}text-blue-400{% else %}text-white hover:text-blue-400{% endif %}
+                                    text-base font-medium
+                                "
+                            >{{ segment.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="flex-inital flex items-center justify-center md:items-stretch md:justify-start">
+                <div class="hidden md:block md:ml-3">
+                    <input type="text" class=" text-white bg-zinc-700 px-2 py-1 rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-blue-400" placeholder="search">
+                </div>
+            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-3 md:pr-0">
+                <NavbarUser />
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div x-show="open" x-collapse>
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <div class="flex flex-col">
+                {% for segment in segments %}
+                    <a
+                        href="{{ segment.url }}"
+                        class="
+                            block
+                            text-opacity-90
+                            transition-colors duration-75
+                            mx-3 my-2
+                            rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-blue-400
+                            {% if segment.url == selected %}text-blue-400{% else %}text-white hover:text-blue-400{% endif %}
+                            text-base font-medium
+                        "
+                    >{{ segment.name }}</a>
+                {% endfor %}
+
+                <input type="text" class="text-white bg-zinc-700 px-3 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-blue-400" placeholder="search">
+            </div>
+        </div>
+    </div>
+</nav>
