@@ -5,7 +5,7 @@
 </script>
 
 <main class="container mx-auto my-2 max-w-screen-xl">
-	<Header />
+	<Header segment=undefined/>
 
 	<slot />
 </main>

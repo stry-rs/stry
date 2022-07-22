@@ -1,5 +1,15 @@
 <script context="module" lang="ts">
-	export const prerender = true;
+	// export const prerender = true;
+
+	export async function load({ params, fetch, session, stuff }) {
+		const res = await fetch("/api/v1/stories");
+
+		// TODO: check response status
+
+		const content = res.ok && await res.json();
+
+		return {};
+	}
 </script>
 
 <script lang="ts">
