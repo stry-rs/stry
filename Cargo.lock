@@ -1997,6 +1997,19 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 [[package]]
 name = "stry"
 version = "0.1.0"
+dependencies = [
+ "axum",
+ "stry-backend-postgres",
+ "stry-backend-sqlite",
+ "stry-common",
+ "stry-service-html",
+ "stry-service-json",
+ "tokio",
+ "tower",
+ "tower-helmet",
+ "tower-http",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "stry-analytics"

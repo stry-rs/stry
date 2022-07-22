@@ -6,3 +6,15 @@ edition = "2021"
 workspace = ".."
 
 [dependencies]
+stry-common = { version = "0.1", path = "../stry-common" }
+stry-backend-postgres = { version = "0.1", path = "../stry-backend-postgres" }
+stry-backend-sqlite = { version = "0.1", path = "../stry-backend-sqlite" }
+stry-service-html = { version = "0.1", path = "../stry-service-html" }
+stry-service-json = { version = "0.1", path = "../stry-service-json" }
+
+axum = { version = "=0.5.13", features = [ "headers" ] }
+tokio = { version = "=1.20.0", features = [ "macros", "rt-multi-thread", "signal", "tracing" ] }
+tower = { version = "=0.4.13", features = [ "limit", "load-shed", "timeout", "util" ] }
+tower-helmet = "=0.2.0"
+tower-http = { version = "=0.3.4", features = [ "auth", "metrics", "trace" ] }
+tracing-subscriber = "=0.3.14"
