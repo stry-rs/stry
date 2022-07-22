@@ -32,7 +32,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let len = Slice::new("foo").len();
     /// assert_eq!(3, len);
     ///
@@ -50,7 +50,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let s = Slice::new("");
     /// assert!(s.is_empty());
     ///
@@ -79,7 +79,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let bananas = Slice::new("bananas");
     ///
     /// assert!(bananas.starts_with("bana"));
@@ -120,7 +120,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let bananas = Slice::new("bananas");
     ///
     /// assert!(bananas.ends_with("anas"));
@@ -161,7 +161,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let bananas = Slice::new("bananas");
     ///
     /// assert!(bananas.contains("nana"));
@@ -215,7 +215,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let s = Slice::new(" Hello\tworld\t");
     ///
     /// assert_eq!("Hello\tworld", s.trim().slice());
@@ -241,7 +241,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let s = Slice::new(" Hello\tworld\t");
     /// assert_eq!("Hello\tworld\t", s.trim_start().slice());
     /// ```
@@ -249,7 +249,7 @@ impl<'s> Slice<'s> {
     /// Directionality:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let s = Slice::new("  English  ");
     /// assert!(Some('E') == s.trim_start().slice().chars().next());
     ///
@@ -304,7 +304,7 @@ impl<'s> Slice<'s> {
     /// Basic usage:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let s = Slice::new(" Hello\tworld\t");
     /// assert_eq!(" Hello\tworld", s.trim_end().slice());
     /// ```
@@ -312,7 +312,7 @@ impl<'s> Slice<'s> {
     /// Directionality:
     ///
     /// ```
-    /// # use lazy_slice::Slice;
+    /// # use fenn::slice::Slice;
     /// let s = Slice::new("  English  ");
     /// assert!(Some('h') == s.trim_end().slice().chars().rev().next());
     ///

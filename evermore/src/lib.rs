@@ -10,7 +10,7 @@
 //! tasks and data), with the tokio [`broadcast channel`] being used as a
 //! shutdown signal sent using [`ctrlc`].
 //!
-//! ```rust,no_run
+//! ```rust,ignore
 //! use stry_evermore::{Evermore, Worker};
 //!
 //! #[derive(Clone, Debug, Default)]
@@ -360,7 +360,7 @@ where
                     tracing::trace!("No future task, creating from factory");
 
                     FactoryState::Waiting {
-                        task: factory.new(data.clone()),
+                        task: factory.construct(data.clone()),
                     }
                 }
                 FactoryStateProject::Waiting { task } => {
@@ -388,7 +388,7 @@ where
                             tracing::error!(error = ?err, "Task failed with error");
 
                             FactoryState::Waiting {
-                                task: factory.new(data.clone()),
+                                task: factory.construct(data.clone()),
                             }
                         }
                     }
@@ -418,7 +418,7 @@ mod factory {
     {
         type Future: TryFuture;
 
-        fn new(&mut self, data: Worker<D>) -> Self::Future;
+        fn construct(&mut self, data: Worker<D>) -> Self::Future;
     }
 
     impl<D, T, F> Factory<D> for T
@@ -430,7 +430,7 @@ mod factory {
         type Future = F;
 
         #[inline]
-        fn new(&mut self, data: Worker<D>) -> Self::Future {
+        fn construct(&mut self, data: Worker<D>) -> Self::Future {
             (self)(data)
         }
     }
