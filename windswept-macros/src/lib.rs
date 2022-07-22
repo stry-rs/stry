@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Expr, ExprForLoop, ExprIf, Stmt};
+use syn::{Expr, ExprForLoop, ExprIf, ExprMatch, Stmt};
 use syn_rsx::{parse, Node, NodeType};
 
 fn walk(size: &mut usize, nodes: Vec<Node>) -> proc_macro2::TokenStream {
@@ -105,8 +105,6 @@ fn handle_special_exprs(tokens: &mut proc_macro2::TokenStream, block_expr: syn::
             then_branch,
             else_branch,
         })) => {
-            let attrs_iter = attrs.iter();
-
             let else_branch = else_branch.as_ref().map(|(else_token, else_expr)| {
                 quote! {
                     #else_token {
@@ -115,11 +113,47 @@ fn handle_special_exprs(tokens: &mut proc_macro2::TokenStream, block_expr: syn::
                 }
             });
 
+            let attrs_iter = attrs.iter();
             tokens.extend(quote! {
                 #( #attrs_iter )*
                 #if_token #cond {
                     ::windswept::Render::render_into({ #then_branch }, f)?;
                 } #else_branch
+            });
+        }
+        Stmt::Expr(Expr::Match(ExprMatch {
+            attrs,
+            match_token,
+            expr,
+            arms,
+            ..
+        })) => {
+            let arms_iter = arms.iter().map(
+                |syn::Arm {
+                    attrs,
+                    pat,
+                    guard,
+                    fat_arrow_token,
+                    body,
+                    comma,
+                }| {
+                    let guard = guard.as_ref().map(|(token, expr)| quote! { #token #expr });
+                    let attrs_iter = attrs.iter();
+                    quote! {
+                        #( #attrs_iter )*
+                        #pat #guard #fat_arrow_token {
+                            ::windswept::Render::render_into({ #body }, f)?;
+                        } #comma
+                    }
+                },
+            );
+
+            let attrs_iter = attrs.iter();
+            tokens.extend(quote! {
+                #( #attrs_iter )*
+                #match_token #expr {
+                    #( #arms_iter )*
+                }
             });
         }
         stmt => {

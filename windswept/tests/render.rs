@@ -131,3 +131,25 @@ fn test_for() {
 
     assert_eq!(expected, frag.as_str());
 }
+
+#[test]
+fn test_match() {
+    fn render(name: Option<&str>) -> String {
+        rsx! {
+            <p>
+            "Hello, "
+            {match name {
+                Some(name) => name,
+                None => "World",
+            }}
+            "!"
+            </p>
+        }
+        .render()
+        .unwrap()
+    }
+
+    assert_eq!("<p>Hello, World!</p>", render(None).as_str());
+
+    assert_eq!("<p>Hello, John!</p>", render(Some("John")).as_str());
+}
