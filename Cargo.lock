@@ -2059,7 +2059,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "stry-frontend-askama"
+name = "stry-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "stry-service-html"
 version = "0.1.0"
 dependencies = [
  "askama",
@@ -2073,15 +2082,6 @@ dependencies = [
  "tower-helmet",
  "tower-http",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "stry-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]

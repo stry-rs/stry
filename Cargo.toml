@@ -17,9 +17,8 @@ members = [
     "stry-backend-postgres",
     "stry-backend-sqlite",
 
+    "stry-service-html",
     "stry-service-json",
-
-    "stry-frontend-askama",
 
     "stry-analytics",
 
