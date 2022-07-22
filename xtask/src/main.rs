@@ -1,14 +1,10 @@
-mod ark;
 mod router;
 
-use {
-    chrono::Utc,
-    std::{
-        collections::HashMap,
-        fs::{self, File},
-        io::Write as _,
-        path::PathBuf,
-    },
+use std::{
+    collections::HashMap,
+    fs::{self, File},
+    io::Write as _,
+    path::PathBuf,
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -362,11 +358,7 @@ fn device_detector() -> Result<(), Box<dyn std::error::Error>> {
                 )?;
             }
             Err(err) => {
-                eprintln!(
-                    "error parsing `{}` at `{}`",
-                    out_file.display(),
-                    err.path().to_string()
-                );
+                eprintln!("error parsing `{}` at `{}`", out_file.display(), err.path());
 
                 return Err(err.into_inner().into());
             }
@@ -388,8 +380,12 @@ fn device_detector() -> Result<(), Box<dyn std::error::Error>> {
 fn new_migration(name: &str, folder: &str) -> std::io::Result<()> {
     fs::create_dir_all(folder)?;
 
-    let dt = Utc::now();
-    let file_prefix = dt.format("%Y%m%d%H%M%S").to_string();
+    let dt = time::OffsetDateTime::now_utc();
+    let file_prefix = dt
+        .format(time::macros::format_description!(
+            "[year][month][day][hour repr:24][minute][second]"
+        ))
+        .unwrap();
 
     let mut path = PathBuf::new();
 
