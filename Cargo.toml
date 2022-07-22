@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+members = [
+    "xtask",
+
+    # 'external' crates
+    "evermore",
+    "fenn",
+    "hieroglyph",
+    "windswept",
+    "windswept-macros",
+
+    # stry crates
+    "stry-common",
+    "stry-macros",
+
+    "stry-backend-postgres",
+    "stry-backend-sqlite",
+
+    "stry-service-json",
+
+    "stry-frontend-askama",
+
+    "stry-analytics",
+
+    "stry",
+]
+
+[profile.dev.package.'*']
+opt-level = 2
