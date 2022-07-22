@@ -1,26 +1,3 @@
-use stry_common::models::Id;
-
-#[rustfmt::skip]
-#[derive(stry_common::prelude::Deserialize)]
-pub struct Pagination {
-    pub cursor: Option<Id>,
-    #[serde(default  = "default_limit")]
-    pub limit: usize,
-}
-
-fn default_limit() -> usize {
-    10
-}
-
-impl Default for Pagination {
-    fn default() -> Self {
-        Self {
-            cursor: None,
-            limit: 10,
-        }
-    }
-}
-
 // pub async fn handle<F, R, T>(f: F) -> Result<crate::router::Response, stry_common::prelude::Error>
 // where
 //     F: FnOnce() -> R,

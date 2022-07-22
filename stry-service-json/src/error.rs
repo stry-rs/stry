@@ -1,12 +1,9 @@
-use std::convert::Infallible;
-
-use stry_common::prelude::*;
-
-use axum::{
-    body::{Bytes, Full},
-    http::StatusCode,
-    Json,
+use stry_common::{
+    error::{ErrorResponse, StatusCodeErrorResponse},
+    prelude::*,
 };
+
+use axum::{http::StatusCode, Json};
 
 #[derive(Debug)]
 pub struct Error(stry_common::prelude::Error);
@@ -39,35 +36,31 @@ impl std::error::Error for Error {
 }
 
 impl axum::response::IntoResponse for Error {
-    type Body = Full<Bytes>;
-
-    type BodyError = Infallible;
-
-    fn into_response(self) -> axum::http::Response<Self::Body> {
-        #[derive(serde::Serialize)]
-        struct Res {
-            error: ResErr,
-        }
-
-        #[derive(serde::Serialize)]
-        struct ResErr {
-            code: u16,
-            status: &'static str,
-        }
-
+    fn into_response(self) -> axum::response::Response {
         let err = self.0;
 
         error!(error = ?err, "error handling request");
 
         let (status, message) = match err {
-            err if err.is::<stry_common::error::NotFound>() => (StatusCode::NOT_FOUND, "not found"),
+            err if err.is::<stry_common::error::NotFound>() => {
+                (StatusCode::NOT_FOUND, "no resource found at this url")
+            }
+            err if err.is::<stry_common::error::Unauthenticated>() => (
+                StatusCode::UNAUTHORIZED,
+                "an account is required to access this resource",
+            ),
+            err if err.is::<stry_common::error::Unauthorized>() => (
+                StatusCode::FORBIDDEN,
+                "forbidden from accessing this resource",
+            ),
             _ => (StatusCode::INTERNAL_SERVER_ERROR, "internal server error"),
         };
 
-        let body = Res {
-            error: ResErr {
+        let body = ErrorResponse {
+            error: StatusCodeErrorResponse {
                 code: status.as_u16(),
-                status: message,
+                status: status.canonical_reason(),
+                message,
             },
         };
 

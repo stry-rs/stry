@@ -1,6 +1,7 @@
 use stry_common::{
-    backend::{arc::ArcBackend, BackendEntry},
+    backend::{ArcBackend, StoryEntity},
     config::ArcConfig,
+    http::Pagination,
     models::{story::Story, Id, New},
 };
 
@@ -11,13 +12,13 @@ use axum::{
 use biscuit::{jwa::SignatureAlgorithm, jws::Secret, ValidationOptions, JWT};
 use headers::{authorization::Bearer, Authorization};
 
-use crate::{error::Error, utils::Pagination};
+use crate::error::Error;
 
 pub async fn get(
     Extension(data): Extension<ArcBackend>,
     Path(id): Path<Id>,
 ) -> Result<impl IntoResponse, Error> {
-    Ok(Json(BackendEntry::<Story>::get(&data, id).await?))
+    Ok(Json(StoryEntity::get(&data, id).await?))
 }
 
 pub async fn all(
@@ -25,7 +26,7 @@ pub async fn all(
     ContentLengthLimit(Query(query)): ContentLengthLimit<Query<Pagination>, { 1024 * 5000 }>,
 ) -> Result<impl IntoResponse, Error> {
     Ok(Json(
-        BackendEntry::<Story>::all(&data, query.cursor, query.limit).await?,
+        StoryEntity::all(&data, query.cursor, query.limit).await?,
     ))
 }
 
@@ -48,5 +49,5 @@ pub async fn create(
 
     // TODO(txuritan): validate that the token is in the database and to retrieve the user id
 
-    Ok(Json(BackendEntry::<Story>::create(&data, story).await?))
+    Ok(Json(StoryEntity::create(&data, story).await?))
 }

@@ -1,5 +1,5 @@
 use stry_common::{
-    backend::{arc::ArcBackend, BackendEntry},
+    backend::{ArcBackend, ChapterEntity},
     config::ArcConfig,
     models::{story::Chapter, Id, New},
 };
@@ -17,7 +17,7 @@ pub async fn get(
     Extension(data): Extension<ArcBackend>,
     Path(id): Path<Id>,
 ) -> Result<impl IntoResponse, Error> {
-    Ok(Json(BackendEntry::<Chapter>::get(&data, id).await?))
+    Ok(Json(ChapterEntity::get(&data, id).await?))
 }
 
 pub async fn create(
@@ -39,5 +39,5 @@ pub async fn create(
 
     // TODO(txuritan): validate that the token is in the database and to retrieve the user id
 
-    Ok(Json(BackendEntry::<Chapter>::create(&data, chapter).await?))
+    Ok(Json(ChapterEntity::create(&data, chapter).await?))
 }
