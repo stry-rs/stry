@@ -1,3 +1,6 @@
+pub mod base;
+pub mod partials;
+
 pub type HeaderSegments = &'static [HeaderSegment];
 
 pub static SEGMENTS: HeaderSegments = &[

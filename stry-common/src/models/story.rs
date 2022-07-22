@@ -183,6 +183,43 @@ pub struct Series {
     pub stories: Either<Vec<Existing<Story>>, Vec<Id>>,
 }
 
+/// The type of tag, used for generic rendering.
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum TagKind {
+    Warning,
+    Pairing,
+    Character,
+    General,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum TagLevel {
+    Major,
+    Minor,
+}
+
+impl TryFrom<&str> for TagLevel {
+    type Error = crate::prelude::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "major" => Ok(TagLevel::Major),
+            "minor" => Ok(TagLevel::Minor),
+            value => crate::prelude::bail!("`{}` is not a valid tag level", value),
+        }
+    }
+}
+
+/// A generic trait for accepting tags from stories.
+pub trait StoryTag {
+    fn level(&self) -> TagLevel;
+    fn kind(&self) -> TagKind;
+}
+
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -205,6 +242,16 @@ pub struct Warning {
     pub level: TagLevel,
 }
 
+impl StoryTag for Warning {
+    fn level(&self) -> TagLevel {
+        self.level
+    }
+
+    fn kind(&self) -> TagKind {
+        TagKind::Warning
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -214,6 +261,16 @@ pub struct Character {
     pub description: String,
 
     pub level: TagLevel,
+}
+
+impl StoryTag for Character {
+    fn level(&self) -> TagLevel {
+        self.level
+    }
+
+    fn kind(&self) -> TagKind {
+        TagKind::Character
+    }
 }
 
 #[rustfmt::skip]
@@ -229,23 +286,13 @@ pub struct Pairing {
     pub level: TagLevel,
 }
 
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub enum TagLevel {
-    Major,
-    Minor,
-}
+impl StoryTag for Pairing {
+    fn level(&self) -> TagLevel {
+        self.level
+    }
 
-impl TryFrom<&str> for TagLevel {
-    type Error = crate::prelude::Error;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "major" => Ok(TagLevel::Major),
-            "minor" => Ok(TagLevel::Minor),
-            value => crate::prelude::bail!("`{}` is not a valid tag level", value),
-        }
+    fn kind(&self) -> TagKind {
+        TagKind::Pairing
     }
 }
 

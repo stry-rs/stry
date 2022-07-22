@@ -1,7 +1,7 @@
 mod handlers;
+mod templates;
 
 mod error;
-mod templates;
 
 use axum::Router;
 
