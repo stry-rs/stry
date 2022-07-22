@@ -1,23 +1,23 @@
 //! Base entities that are used internally and by other 'modules'.
 
+use sodiumoxide::crypto::pwhash::argon2id13;
+
 use crate::{
     models::{blog::Post, story::Story, Existing},
-    prelude::{DateTime, Utc},
+    prelude::{err, Error, Validate},
 };
 
-/// Universal site settings.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
-pub struct Settings {
-    /// A unique setting name.
-    ///
-    /// Left as a [`String`] to allow for other modules to use the settings
-    /// without using extension types.
-    pub key: String,
-
-    /// The value of the key, encoded as JSON.
-    pub value: String,
+#[derive(Validate)]
+pub struct UserRegisterForm {
+    #[validate(length(min = 4))]
+    pub username: String,
+    #[validate(email)]
+    pub email: String,
+    #[validate(length(min = 8, max = 512))]
+    pub password: String,
 }
 
 /// A user of the website, used from displaying authors to signing in.
@@ -25,8 +25,9 @@ pub struct Settings {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct User {
-    pub account: SettingsAccount,
-    pub site: Option<SettingsSite>,
+    pub account: Account,
+    pub appearance: Appearance,
+    pub notifications: Notifications,
 
     /// Stores all the stories that the user owns.
     ///
@@ -44,44 +45,22 @@ pub struct User {
 }
 
 impl User {
-    pub fn new_simple(name: String) -> Self {
+    pub fn new(account: Account) -> Self {
         Self {
-            account: SettingsAccount {
-                name,
-                email: None,
-                hash: None,
-                biography: None,
-            },
-            site: None,
+            account,
+            appearance: Default::default(),
+            notifications: Default::default(),
             stories: None,
             posts: None,
         }
     }
 }
 
-pub struct UserRecord {
-    pub id: String,
-
-    pub name: String,
-
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
-}
-
+/// Information and settings for a user, ie name, biography, and security details.
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
-pub struct UserRegisterForm {
-    pub username: String,
-    pub email: String,
-    pub password: String,
-}
-
-/// User settings for the user themself, ie name, biography, and security details.
-#[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct SettingsAccount {
+pub struct Account {
     /// The user's visible username.
     ///
     /// # Note
@@ -116,12 +95,41 @@ pub struct SettingsAccount {
     pub biography: Option<Vec<Existing<Part>>>,
 }
 
-/// User settings for the site itself, ie appearance and notifications.
-// TODO: support color blindness
+impl Account {
+    // TODO: run the hashing in its own thread to allow for more passes
+    pub fn new(name: String, email: String, password: String) -> Result<Self, Error> {
+        // NOTE: always call tis is any function that needs to use anything from sodiumoxide
+        sodiumoxide::init().map_err(|_| err!("unable to initialize sodiumoxide"))?;
+
+        // From https://libsodium.gitbook.io/doc/password_hashing/default_phf#key-derivation
+        //
+        // For interactive, online operations, crypto_pwhash_OPSLIMIT_INTERACTIVE and crypto_pwhash_MEMLIMIT_INTERACTIVE provide a baseline for these two parameters.
+        // This currently requires 64 MiB of dedicated RAM.
+        //
+        // From https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+        //
+        // Use Argon2id with a minimum configuration of 15 MiB of memory, an iteration count of 2, and 1 degree of parallelism.
+        let hashed = argon2id13::pwhash(
+            password.as_bytes(),
+            argon2id13::OPSLIMIT_INTERACTIVE,
+            argon2id13::MEMLIMIT_INTERACTIVE,
+        )
+        .map_err(|_| err!("unable to hash supplied password"))?;
+
+        Ok(Self {
+            name,
+            email: Some(email),
+            hash: Some(hashed.0.to_vec()),
+            biography: None,
+        })
+    }
+}
+
+/// User website/app appearance settings.
 #[rustfmt::skip]
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
-pub struct SettingsSite {
+pub struct Appearance {
     pub theme: SiteTheme,
 }
 
@@ -132,6 +140,36 @@ pub struct SettingsSite {
 pub enum SiteTheme {
     Dark,
     Light,
+}
+
+impl Default for SiteTheme {
+    fn default() -> Self {
+        SiteTheme::Dark
+    }
+}
+
+/// User notification settings.
+#[rustfmt::skip]
+#[derive(Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Notifications {
+    pub comments: NotificationPreference,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(serde::Deserialize, serde::Serialize)]
+pub enum NotificationPreference {
+    Both,
+    Neither,
+    Email,
+    Web,
+}
+
+impl Default for NotificationPreference {
+    fn default() -> Self {
+        NotificationPreference::Both
+    }
 }
 
 /// A chapter or comment segment that can be commented on.

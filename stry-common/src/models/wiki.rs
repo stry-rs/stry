@@ -1,11 +1,11 @@
 //! Site wide and user wiki, allowing for history and notes on anything needed.
 
-use {
-    crate::models::{
+use crate::{
+    models::{
         core::{Part, Tag},
         Existing,
     },
-    chrono::{DateTime, Utc},
+    prelude::OffsetDateTime,
 };
 
 /// A wiki page and its related data.
@@ -31,5 +31,5 @@ pub struct PageRevision {
 
     pub tags: Vec<Existing<Tag>>,
 
-    pub modified: DateTime<Utc>,
+    pub modified: OffsetDateTime,
 }

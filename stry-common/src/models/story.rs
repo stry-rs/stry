@@ -6,7 +6,7 @@ use crate::{
         core::{Comment, Part, Tag, User},
         Either, Existing, Id,
     },
-    prelude::{members, DateTime, Member, TryFrom, Utc},
+    prelude::{members, Member, OffsetDateTime, TryFrom},
 };
 
 #[rustfmt::skip]
@@ -90,6 +90,7 @@ impl Member for Story {
     }
 }
 
+/// A type used for database responses, maps to a row in the stories table.
 pub struct StoryRecord {
     pub name: String,
     pub summary: String,
@@ -97,8 +98,22 @@ pub struct StoryRecord {
     pub rating: Rating,
     pub state: State,
 
-    pub created: DateTime<Utc>,
-    pub updated: DateTime<Utc>,
+    pub created: OffsetDateTime,
+    pub updated: OffsetDateTime,
+}
+
+/// A variant of [`StoryRecord`] that includes the story id in [`String`] form.
+pub struct StoryRecordId {
+    pub id: String,
+
+    pub name: String,
+    pub summary: String,
+
+    pub rating: Rating,
+    pub state: State,
+
+    pub created: OffsetDateTime,
+    pub updated: OffsetDateTime,
 }
 
 #[rustfmt::skip]
