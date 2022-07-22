@@ -70,7 +70,7 @@ where
     ///
     /// ```
     /// # use async_trait::async_trait;
-    /// # use ultra_batch::{Batcher, Fetcher, Cache};
+    /// # use stry_common::dataloader::{Batcher, Fetcher, Cache};
     /// # struct UserFetcher;
     /// # impl UserFetcher {
     /// #     fn new(db_conn: ()) -> Self { UserFetcher }
@@ -87,7 +87,7 @@ where
     /// # #[tokio::main] async fn main() -> anyhow::Result<()> {
     /// # let db_conn = ();
     /// let user_fetcher = UserFetcher::new(db_conn);
-    /// let batcher = Batcher::new(user_fetcher).build();
+    /// let batcher = Batcher::builder(user_fetcher).build();
     /// # Ok(())
     /// # }
     /// ```
@@ -111,7 +111,7 @@ where
     /// # }
     /// # #[tokio::main] async fn main() -> anyhow::Result<()> {
     /// # let db_conn = ();
-    /// let user_fetcher = UserFetcher::builder(db_conn);
+    /// let user_fetcher = UserFetcher::new(db_conn);
     /// let batcher = Batcher::builder(user_fetcher)
     ///     .eager_batch_size(Some(50))
     ///     .delay_duration(tokio::time::Duration::from_millis(5))

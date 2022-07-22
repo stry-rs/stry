@@ -1,12 +1,46 @@
+//! Custom errors used for HTTP responses.
+
 use std::{error::Error, fmt};
 
-#[derive(Debug)]
-pub struct NotFound;
+pub use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 
-impl fmt::Display for NotFound {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "not found")
-    }
+macro_rules! http_error {
+    ( $(
+        $( #[$attr:meta] )*
+        $name:ident : $msg:expr ,
+    )* ) => {
+        $(
+            $( #[$attr] )*
+            #[derive(Debug)]
+            pub struct $name;
+
+            impl fmt::Display for $name {
+                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                    write!(f, $msg)
+                }
+            }
+
+            impl Error for $name {}
+        )*
+    };
 }
 
-impl Error for NotFound {}
+// This are later translated into normal http status codes
+// but they don't actually correspond to the code you mny think
+http_error! {
+    NotFound: "not found",
+    Unauthenticated: "unauthenticated",
+    Unauthorized: "unauthorized",
+}
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct ErrorResponse<Err> {
+    pub error: Err,
+}
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct StatusCodeErrorResponse {
+    pub code: u16,
+    pub status: Option<&'static str>,
+    pub message: &'static str,
+}

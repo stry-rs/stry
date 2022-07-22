@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::layered::{Anulap, Initialize};
+use twelf::Layer;
 
 /// The default secret key.
 ///
@@ -12,14 +12,15 @@ pub static DEFAULT_SECRET: &str = "&E)H@McQfTjWnZr4u7w!z%C*F-JaNdRg";
 pub type ArcConfig = Arc<Config>;
 
 /// The application init configuration.
-#[derive(Clone, Debug, serde::Deserialize)]
-#[serde(default)]
+#[twelf::config]
+#[derive(Clone, Debug)]
 pub struct Config {
     /// Defines what ip the web server will be bound to.
     ///
     /// # Default
     ///
     /// If constructed with [`Default::default`] this value is set to `[0, 0, 0, 0]` (aka `0.0.0.0`).
+    #[serde(default = "default_ip")]
     pub ip: [u8; 4],
 
     /// Defines what port the web server will listen to.
@@ -27,6 +28,7 @@ pub struct Config {
     /// # Default
     ///
     /// If constructed with [`Default::default`] this value is set to `8901`.
+    #[serde(default = "default_port")]
     pub port: u16,
 
     /// The database connection URI.
@@ -59,58 +61,39 @@ pub struct Config {
     ///
     /// The parser for this is very simple and may not be able to understand
     /// every valid URI.
+    #[serde(default = "default_database")]
     pub database: String,
 
     /// The secret key used for JWT creation and verification.
+    #[serde(default = "default_secret")]
     pub secret: String,
 }
 
 impl Config {
+    pub fn load() -> anyhow::Result<Self> {
+        Ok(Self::with_layers(&[
+            Layer::Toml("stry.toml".into()),
+            Layer::Env(Some("STRY_".to_string())),
+        ])?)
+    }
+
     pub fn into_arc(self) -> Arc<Self> {
         Arc::new(self)
     }
 }
 
-impl Initialize for Config {
-    fn init(config: &Anulap<'_>) -> Option<Self> {
-        Some(Self {
-            ip: config
-                .get("ip")
-                .and_then(|value| {
-                    let mut parts = value
-                        .split('.')
-                        .map(str::parse)
-                        .collect::<Vec<Result<u8, _>>>();
-
-                    let four = parts.pop()?.ok()?;
-                    let three = parts.pop()?.ok()?;
-                    let two = parts.pop()?.ok()?;
-                    let one = parts.pop()?.ok()?;
-
-                    Some([one, two, three, four])
-                })
-                .unwrap_or_else(|| [0, 0, 0, 0]),
-            port: config
-                .get("port")
-                .and_then(|value| value.parse().ok())
-                .unwrap_or(8901),
-            database: config
-                .get("database")
-                .unwrap_or_else(|| String::from("postgres://stry:stry@localhost:5432/stry")),
-            secret: config
-                .get("secret")
-                .unwrap_or_else(|| String::from(DEFAULT_SECRET)),
-        })
-    }
+fn default_ip() -> [u8; 4] {
+    [0, 0, 0, 0]
 }
 
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            ip: [0, 0, 0, 0],
-            port: 8901,
-            database: String::from("postgres://stry:stry@localhost:5432/stry"),
-            secret: String::from(DEFAULT_SECRET),
-        }
-    }
+fn default_port() -> u16 {
+    8901
+}
+
+fn default_database() -> String {
+    String::from("postgres://stry:stry@localhost:5432/stry")
+}
+
+fn default_secret() -> String {
+    String::from(DEFAULT_SECRET)
 }

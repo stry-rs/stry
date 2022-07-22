@@ -10,29 +10,29 @@ pub mod models;
 
 pub mod config;
 pub mod error;
-pub mod layered;
+pub mod http;
+// pub mod layered;
 pub mod uri;
 
 pub mod prelude {
-    pub use crate::{
-        members,
-        utils::{
-            iter::IntoIteratorExt, HashMapExt, IntoOption, IntoResult, Member, OptionExt, Peep,
-            PeepOption, PeepResult, StringExt, Wrap,
-        },
-    };
+    pub use crate::{members, utils::Member};
 
+    pub use fenn::{
+        iter::IntoIteratorExt, HashMapExt, IntoOption, IntoResult, OptionExt, Peep, PeepOption,
+        PeepResult, StringExt, Wrap,
+    };
     pub use stry_macros::box_async;
 
-    pub use anyhow::{bail, ensure, Context, Error};
+    pub use anyhow::{anyhow as err, bail, ensure, Context, Error};
     pub use async_trait::async_trait;
-    pub use chrono::{DateTime, Utc};
     pub use serde::{Deserialize, Serialize};
     pub use std::convert::TryFrom;
+    pub use time::{OffsetDateTime, UtcOffset};
+    pub use validator::Validate;
 
     pub use tracing::{
-        debug, debug_span, error, error_span, field, info, info_span, instrument, span, trace,
-        trace_span, warn, warn_span, Instrument, Span,
+        self, debug, debug_span, error, error_span, field, info, info_span, instrument, span,
+        trace, trace_span, warn, warn_span, Instrument, Span,
     };
 }
 
