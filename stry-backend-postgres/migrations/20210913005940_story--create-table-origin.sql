@@ -1,4 +1,4 @@
-CREATE TABLE story_origin (
+CREATE TABLE IF NOT EXISTS story_origin (
     id              VARCHAR(8)  UNIQUE  NOT NULL    PRIMARY KEY,
 
     content         TEXT                NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE story_warning (
+CREATE TABLE IF NOT EXISTS story_warning (
     id              VARCHAR(8)  UNIQUE  NOT NULL    PRIMARY KEY,
 
     content         TEXT                NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE story_story_tag (
+CREATE TABLE IF NOT EXISTS story_story_tag (
     story_id    VARCHAR(8)      NOT NULL,
     tag_id      VARCHAR(8)      NOT NULL,
 

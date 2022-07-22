@@ -1,4 +1,4 @@
-CREATE TABLE core_tag (
+CREATE TABLE IF NOT EXISTS core_tag (
     id              VARCHAR(8)  UNIQUE  NOT NULL    PRIMARY KEY,
 
     content         TEXT                NOT NULL,

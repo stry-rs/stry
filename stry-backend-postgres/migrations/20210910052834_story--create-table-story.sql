@@ -1,4 +1,4 @@
-CREATE TABLE story_story (
+CREATE TABLE IF NOT EXISTS story_story (
     id          VARCHAR(8)  UNIQUE  NOT NULL    PRIMARY KEY,
     name        TEXT                NOT NULL,
     summary     TEXT                NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE core_user (
+CREATE TABLE IF NOT EXISTS core_user (
     id          VARCHAR(8)  UNIQUE  NOT NULL    PRIMARY KEY,
     email       TEXT        UNIQUE  NOT NULL,
     name        TEXT                NOT NULL,

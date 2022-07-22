@@ -1,4 +1,4 @@
-CREATE TABLE core_settings (
+CREATE TABLE IF NOT EXISTS core_settings (
     key         TEXT    UNIQUE  NOT NULL,
     value       TEXT            NOT NULL,
 

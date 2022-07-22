@@ -1,4 +1,4 @@
-CREATE TABLE story_story_user (
+CREATE TABLE IF NOT EXISTS story_story_user (
     story_id        VARCHAR(8)                  NOT NULL,
     user_id         VARCHAR(8)                  NOT NULL,
 
