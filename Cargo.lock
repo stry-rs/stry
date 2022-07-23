@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "accept-language"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2bc21ffc9b77e9c31e733bb7e937c11dcf6157bb74f80bf94734110aa9b9ebc"
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -133,6 +139,16 @@ dependencies = [
  "http",
  "http-body",
  "mime",
+]
+
+[[package]]
+name = "axum-language"
+version = "0.1.0"
+dependencies = [
+ "accept-language",
+ "async-trait",
+ "axum",
+ "unic-langid",
 ]
 
 [[package]]
@@ -2184,6 +2200,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42657b1a6f4d817cda8e7a0ace261fe0cc946cf3a80314390b22cc61ae080792"
 
 [[package]]
+name = "tinystr"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29738eedb4388d9ea620eeab9384884fc3f06f586a2eddb56bedc5885126c7c1"
+
+[[package]]
 name = "tinytemplate"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2455,6 +2477,24 @@ dependencies = [
  "rand",
  "serde",
  "time 0.3.11",
+]
+
+[[package]]
+name = "unic-langid"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "73328fcd730a030bdb19ddf23e192187a6b01cd98be6d3140622a89129459ce5"
+dependencies = [
+ "unic-langid-impl",
+]
+
+[[package]]
+name = "unic-langid-impl"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a4a8eeaf0494862c1404c95ec2f4c33a2acff5076f64314b465e3ddae1b934d"
+dependencies = [
+ "tinystr",
 ]
 
 [[package]]

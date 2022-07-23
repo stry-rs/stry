@@ -1,0 +1,12 @@
+[package]
+name = "axum-language"
+version = "0.1.0"
+edition = "2021"
+
+workspace = ".."
+
+[dependencies]
+accept-language = "2.0"
+async-trait = "0.1"
+axum = { version = "0.5", default-features = false }
+unic-langid = "0.9"

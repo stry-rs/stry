@@ -4,6 +4,7 @@ members = [
     "xtask",
 
     # 'external' crates
+    "axum-language",
     "evermore",
     "fenn",
     "hieroglyph",
