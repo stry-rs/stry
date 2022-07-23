@@ -47,9 +47,13 @@ where
         (TagKind::Warning, _) => class!("bg-red-400 bg-red-500"),
         (TagKind::General, _) => class!("bg-gray-400 bg-gray-500"),
         (TagKind::Pairing, TagLevel::Major) => class!("bg-yellow-400 bg-yellow-500"),
-        (TagKind::Pairing, TagLevel::Minor) => class!("gradient-stripes-yellow-400 gradient-stripes-yellow-500"),
+        (TagKind::Pairing, TagLevel::Minor) => {
+            class!("gradient-stripes-yellow-400 gradient-stripes-yellow-500")
+        }
         (TagKind::Character, TagLevel::Major) => class!("bg-blue-400 bg-blue-500"),
-        (TagKind::Character, TagLevel::Minor) => class!("gradient-stripes-blue-400 gradient-stripes-blue-500"),
+        (TagKind::Character, TagLevel::Minor) => {
+            class!("gradient-stripes-blue-400 gradient-stripes-blue-500")
+        }
     };
 
     rsx! {

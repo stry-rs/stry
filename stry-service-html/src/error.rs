@@ -17,15 +17,15 @@ impl Error {
     }
 }
 
-impl From<stry_common::prelude::Error> for Error {
-    fn from(err: stry_common::prelude::Error) -> Self {
-        Self(err)
+impl From<std::fmt::Error> for Error {
+    fn from(err: std::fmt::Error) -> Self {
+        Self::from_any(err)
     }
 }
 
-impl From<askama::Error> for Error {
-    fn from(err: askama::Error) -> Self {
-        Self(err.into())
+impl From<stry_common::prelude::Error> for Error {
+    fn from(err: stry_common::prelude::Error) -> Self {
+        Self(err)
     }
 }
 

@@ -23,7 +23,7 @@ const map = (array, iteratee) => {
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "templates/**/*.html"
+    "src/templates/**/*.rs"
   ],
   theme: {
     extend: {},

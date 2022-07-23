@@ -1,5 +1,9 @@
-pub mod base;
+pub mod page;
+
+mod base;
 pub mod partials;
+
+pub use self::base::base;
 
 pub type HeaderSegments = &'static [HeaderSegment];
 
