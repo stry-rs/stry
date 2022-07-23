@@ -130,13 +130,13 @@ fn handle_special_exprs(tokens: &mut proc_macro2::TokenStream, block_expr: syn::
         })) => {
             let arms_iter = arms.iter().map(
                 |syn::Arm {
-                    attrs,
-                    pat,
-                    guard,
-                    fat_arrow_token,
-                    body,
-                    comma,
-                }| {
+                     attrs,
+                     pat,
+                     guard,
+                     fat_arrow_token,
+                     body,
+                     comma,
+                 }| {
                     let guard = guard.as_ref().map(|(token, expr)| quote! { #token #expr });
                     let attrs_iter = attrs.iter();
                     quote! {

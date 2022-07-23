@@ -32,7 +32,7 @@ where
     }
 }
 
-pub fn tag<'r, T, S>(tag: T, url: &'r str, slot: S) -> impl Render + 'r
+pub fn tag<'r, T, S>(tag: &'r T, url: &'r str, slot: S) -> impl Render + 'r
 where
     T: StoryTag,
     S: Render + 'r,
@@ -132,6 +132,26 @@ pub fn story(story: &Existing<Story>) -> impl Render + '_ {
             <div class="pt-2 text-sm text-opacity-60 text-white"></div>
             <div class="text-sm">
                 <ul class="flex flex-wrap">
+                    {for warning in &story.warnings {
+                        rsx! {
+                            <li>{tag(warning, "", &warning.content)}</li>
+                        }
+                    }}
+                    {for pairing in &story.pairings {
+                        rsx! {
+                            <li>{tag(pairing, "", "")}</li>
+                        }
+                    }}
+                    {for character in &story.characters {
+                        rsx! {
+                            <li>{tag(character, "", &character.content)}</li>
+                        }
+                    }}
+                    {for general in &story.tags {
+                        rsx! {
+                            <li>{tag(general, "", &general.content)}</li>
+                        }
+                    }}
                 </ul>
             </div>
             <div class="text-sm text-opacity-60 text-white flex">

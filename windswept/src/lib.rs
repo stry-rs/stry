@@ -42,6 +42,20 @@ impl Render for String {
     }
 }
 
+impl<'r> Render for &'r String {
+    #[inline]
+    fn render_into(self, writer: &mut dyn Write) -> Result<(), std::fmt::Error> {
+        writer.write_str(self)?;
+
+        Ok(())
+    }
+
+    #[inline]
+    fn size_hint(&self) -> usize {
+        self.len()
+    }
+}
+
 /// This is hidden as its an internal implementation and should mot be relied on
 #[doc(hidden)]
 impl<F> Render for (F, usize)

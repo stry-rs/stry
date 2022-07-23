@@ -220,6 +220,26 @@ pub trait StoryTag {
     fn kind(&self) -> TagKind;
 }
 
+impl<T: StoryTag> StoryTag for Existing<T> {
+    fn level(&self) -> TagLevel {
+        self.inner.level()
+    }
+
+    fn kind(&self) -> TagKind {
+        self.inner.kind()
+    }
+}
+
+impl StoryTag for Tag {
+    fn level(&self) -> TagLevel {
+        TagLevel::Major
+    }
+
+    fn kind(&self) -> TagKind {
+        TagKind::General
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[derive(serde::Deserialize, serde::Serialize)]
