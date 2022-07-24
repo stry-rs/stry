@@ -20,13 +20,14 @@ async fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var(
             "RUST_LOG",
-            "stry=debug,stry_service_html=debug,stry_service_json=debug",
+            "stry=debug,stry_service_html=debug,stry_service_json=debug,sqlx=info",
         )
     }
 
     tracing_subscriber::registry()
         // .with(console_subscriber::spawn())
         .with(tracing_subscriber::fmt::layer().with_thread_ids(true))
+        .with(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
     let config = Config::load()

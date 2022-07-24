@@ -1,3 +1,4 @@
+use axum_language::AcceptLanguage;
 use stry_common::{
     backend::{ArcBackend, StoryEntity},
     http::Pagination,
@@ -13,8 +14,9 @@ use windswept::Render as _;
 
 use crate::error::Error;
 
-#[instrument(skip(data, query), err)]
+#[instrument(skip(lang, data, query), err)]
 pub async fn get(
+    lang: AcceptLanguage,
     Extension(data): Extension<ArcBackend>,
     ContentLengthLimit(Query(query)): ContentLengthLimit<Query<Pagination>, { 1024 * 5000 }>,
 ) -> Result<impl IntoResponse, Error> {

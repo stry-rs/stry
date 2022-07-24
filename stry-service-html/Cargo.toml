@@ -8,9 +8,16 @@ workspace = ".."
 [dependencies]
 stry-common = { version = "0.1", path = "../stry-common" }
 stry-backend-postgres = { version = "0.1", path = "../stry-backend-postgres" }
+
+axum-language = { version = "0.1", path = "../axum-language" }
 windswept = { version = "0.1", path = "../windswept" }
 
 axum = { version = "=0.5.13", features = [ "headers" ] }
+fluent = "=0.16.0"
+fluent-fallback = "=0.6.0"
+fluent-langneg = "=0.13.0"
+fluent-resmgr = "=0.0.5"
+intl-memoizer = "=0.5.1"
 serde = "=1.0.139"
 serde_json = "=1.0.82"
 tokio = { version = "=1.20.0", features = [ "macros", "rt-multi-thread", "signal", "tracing" ] }
@@ -18,3 +25,4 @@ tower = { version = "=0.4.13", features = [ "limit", "load-shed", "timeout", "ut
 tower-helmet = "=0.2.0"
 tower-http = { version = "=0.3.4", features = [ "auth", "metrics", "trace" ] }
 tracing-subscriber = "=0.3.14"
+unic-langid = { version = "=0.9.0", features = [ "macros" ] }
