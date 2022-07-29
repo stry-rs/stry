@@ -11,7 +11,7 @@
 //! shutdown signal sent using [`ctrlc`].
 //!
 //! ```rust,ignore
-//! use stry_evermore::{Evermore, Worker};
+//! use evermore::{Evermore, Worker};
 //!
 //! #[derive(Clone, Debug, Default)]
 //! struct Data {}
@@ -34,7 +34,7 @@
 //!
 //!     let signal = async move { rx.recv().await.expect("Failed to listen for event") };
 //!
-//!     Evermore::new(signal, 4, Data::default(), |data: Worker<Data>| {
+//!     Evermore::new_default(signal, 4, |data: Worker<Data>| {
 //!         Box::pin(task(data))
 //!     })
 //!     .await;
@@ -59,20 +59,19 @@
 //! [`broadcast channel`]: https://docs.rs/tokio/0.2.22/tokio/sync/broadcast/fn.channel.html
 //! [`ctrlc`]: https://crates.io/crates/ctrlc
 
-use {
-    futures_core::TryFuture,
-    std::{
-        error::Error,
-        future::Future,
-        marker::{PhantomData, Unpin},
-        pin::Pin,
-        sync::{
-            atomic::{AtomicBool, Ordering},
-            Arc,
-        },
-        task::{Context, Poll},
+use std::{
+    error::Error,
+    future::Future,
+    marker::{PhantomData, Unpin},
+    pin::Pin,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
     },
+    task::{Context, Poll},
 };
+
+use futures_core::TryFuture;
 
 /// An graceful shutdown enabled repeating asynchronous task runner.
 #[must_use = "futures do nothing unless you `.await` or poll them"]
@@ -103,13 +102,19 @@ where
     F: Unpin + factory::Factory<D>,
     <F as factory::Factory<D>>::Future: TryFuture<Error = E> + Unpin,
 {
+    /// Creates a new task service.
+    ///
+    /// `signal` can be any future that continuously returns [`Poll::Pending`] until the tasks need to shut down,
+    /// in most cases this is a oneshot channel receiver or something similar like an interrupt handler.
+    ///
+    /// `data` should be a cheep to clone type (like [`Arc`]) as it will be shared to every task.
+    ///
     /// # Panics
     ///
-    /// This function panics if the `working_count` is `0`.
-    //
-    /// *NOTE*: `worker_count` does not have an upper bound.
+    /// This function panics if the `working_count` is `0` .
+    // TODO: remove the need for a factory
     pub fn new(signal: S, worker_count: usize, data: D, factory: F) -> Self {
-        debug_assert!(worker_count == 0, "Worker count cannot be 0");
+        assert!(worker_count == 0, "Worker count cannot be 0");
 
         let worker_data = Worker {
             data,
@@ -147,6 +152,16 @@ where
             workers,
             signal,
         }
+    }
+
+    /// Create a new task service using [`Default::default`] for the data.
+    ///
+    /// See [`Evermore::new`] for more info.
+    pub fn new_default(signal: S, worker_count: usize, factory: F) -> Self
+    where
+        D: Default,
+    {
+        Self::new(signal, worker_count, D::default(), factory)
     }
 }
 
@@ -263,15 +278,19 @@ where
     D: Clone,
 {
     stop: Arc<AtomicBool>,
-
-    /// The users shared data.
-    pub data: D,
+    data: D,
 }
 
 impl<D> Worker<D>
 where
     D: Clone,
 {
+    /// Get the shared task data.
+    #[inline]
+    pub fn data(&self) -> &D {
+        &self.data
+    }
+
     /// Returns `true` if the running task should cleanup and shutdown.
     #[inline]
     pub fn should_stop(&self) -> bool {
